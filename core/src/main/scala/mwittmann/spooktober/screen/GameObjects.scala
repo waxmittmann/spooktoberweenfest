@@ -8,8 +8,8 @@ import mwittmann.spooktober.entity.Zombie
 import mwittmann.spooktober.unit.Dimensions2d
 import mwittmann.spooktober.unit.Position
 import mwittmann.spooktober.unit.Vector2df
-import java.util
-import java.util.{ArrayList, List}
+
+import scala.collection.mutable
 
 
 class GameObjects(val dimensions: Dimensions2d) {
@@ -18,11 +18,12 @@ class GameObjects(val dimensions: Dimensions2d) {
   val collidableZombie = new Zombie(new Position(dimensions.x / 2 + 50, dimensions.y / 2 + 50))
   val player = new Player(new Position(dimensions.x / 2, dimensions.y / 2))
 
-  val zombies = new util.ArrayList[Zombie]
-  zombies.add(collidableZombie)
+  val zombies: mutable.MutableList[Zombie] = mutable.MutableList[Zombie]()
+
+  zombies.+=(collidableZombie)
 
   def addZombie(zombie: Zombie): Unit = {
-    zombies.add(zombie)
+    zombies.+=(zombie)
   }
 
   def movePlayer(vector: Vector2df): Unit = {
@@ -34,7 +35,6 @@ class GameObjects(val dimensions: Dimensions2d) {
   }
 
   def moveZombies(deltaSeconds: Float): Unit = {
-    import scala.collection.JavaConversions._
     for (zombie <- zombies) {
       val mv = zombie.getMove(deltaSeconds)
       zombie.movePosition(mv)

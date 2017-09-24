@@ -15,7 +15,7 @@ object Assets {
   var zombieB: Animation = null
 
   def load(): Unit = {
-    zombieSheet = loadTexture("ZombiesSpritesheet2.png")
+    zombieSheet = loadTexture("ZombiesSpritesheet.png")
 
     playerSheet = loadTexture("PlayerSpritesheet.png")
 

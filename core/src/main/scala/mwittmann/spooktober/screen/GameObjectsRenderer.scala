@@ -14,12 +14,14 @@ class GameObjectsRenderer {
 
   def render(gameObjects: GameObjects, view: View): Unit = {
     DebugDraw.point(view.screenWidth / 2, view.screenHeight / 2, 10)
+
     batch.begin()
     batch.setProjectionMatrix(batch.getProjectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth, Gdx.graphics.getHeight))
-    import scala.collection.JavaConversions._
+
     for (zombie <- gameObjects.zombies) {
       renderZombie(zombie, view)
     }
+
     renderPlayer(gameObjects.player, view)
     batch.end()
   }

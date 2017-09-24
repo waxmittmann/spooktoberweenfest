@@ -15,12 +15,13 @@ class GameScreen() extends ScreenAdapter {
 
   Assets.load()
 
-  private[screen] val gameDimensions = new Dimensions2d(800, 800)
+  val gameDimensions = new Dimensions2d(800, 800)
   val gameObjects = new GameObjects(gameDimensions)
-  private[screen] val gameObjectsRenderer = new GameObjectsRenderer
-  private[screen] val debug = new DebugDraw
-  final val factor = 5.0f
-  private[screen] val playerSpeed: Float = 10
+  val gameObjectsRenderer = new GameObjectsRenderer
+  val debug = new DebugDraw
+  val factor = 5.0f
+  val playerSpeed: Float = 10
+
   private[screen] var sinceLast: Float = 0
   private[screen] val waitFor: Float = 0.025f
   private[screen] var gameFactor: Float = 0.1f
