@@ -8,7 +8,7 @@ import com.badlogic.gdx.ScreenAdapter
 import com.badlogic.gdx.graphics.GL20
 import mwittmann.spooktober.asset.me.mwittmann.hellogdx.asset.Assets
 import mwittmann.spooktober.entity.Zombie
-import mwittmann.spooktober.unit.{Dimensions2d, Position, Vector2df}
+import mwittmann.spooktober.unit.{Dimensions2d, Position2d, Vector2df}
 import mwittmann.spooktober.util.{DebugDraw, GlobalRandom}
 
 class GameScreen() extends ScreenAdapter {
@@ -58,17 +58,10 @@ class GameScreen() extends ScreenAdapter {
     if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) this.gameFactor *= (1 + 0.5f * delta)
     if (Gdx.input.isKeyPressed(Input.Keys.EQUALS)) this.gameFactor /= (1 + 0.5f * delta)
     if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
-      var i = 0
-      while ( {
-        i < 200
-      }) {
+      for { _ <- 0 to 200 } yield {
         val x = GlobalRandom.random.nextInt(gameDimensions.x.toInt)
         val y = GlobalRandom.random.nextInt(gameDimensions.y.toInt)
-        gameObjects.addZombie(new Zombie(new Position(x, y)))
-
-        {
-          i += 1; i - 1
-        }
+        gameObjects.addZombie(new Zombie(new Position2d(x, y)))
       }
     }
     if (this.gameFactor < 0.01) this.gameFactor = 0.01f

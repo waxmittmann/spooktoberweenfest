@@ -5,7 +5,7 @@ import mwittmann.spooktober.screen.GameObjects
 
 
 object DebugDraw {
-  private[util] val sr = new ShapeRenderer
+  private val sr = new ShapeRenderer
 
   def point(x: Float, y: Float, radius: Int): Unit = {
     sr.setColor(1f, 0f, 0f, 1)

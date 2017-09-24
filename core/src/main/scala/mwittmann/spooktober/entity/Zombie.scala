@@ -1,10 +1,10 @@
 package mwittmann.spooktober.entity
 
-import mwittmann.spooktober.unit.{Dimensions2d, Position, Vector2df}
+import mwittmann.spooktober.unit.{Dimensions2d, Position2d, Vector2df}
 import mwittmann.spooktober.util.GlobalRandom
 
 // Todo: Inc state time
-case class Zombie(var position: Position) {
+case class Zombie(var position: Position2d) {
   // Todo: Should store in renderer probably
   var stateTime: Float = GlobalRandom.random.nextFloat // So that all the anims aren't synced
 
@@ -15,9 +15,9 @@ case class Zombie(var position: Position) {
     position = position.incX(vector.x).incY(vector.y)
   }
 
-  def getPosition: Position = position
+  def getPosition: Position2d = position
 
-  def setPosition(position: Position): Unit = {
+  def setPosition(position: Position2d): Unit = {
     this.position = position
   }
 
