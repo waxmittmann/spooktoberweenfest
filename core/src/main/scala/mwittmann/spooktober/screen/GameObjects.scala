@@ -1,20 +1,21 @@
 package mwittmann.spooktober.screen
 
 import scala.collection.mutable
-
 import com.badlogic.gdx.math.Rectangle
-
 import mwittmann.spooktober.entity.Player
 import mwittmann.spooktober.entity.Zombie
-import mwittmann.spooktober.unit.Dimensions2d
-import mwittmann.spooktober.unit.Position2d
+import mwittmann.spooktober.unit.Dimensions2df
+import mwittmann.spooktober.unit.Position2df
 import mwittmann.spooktober.unit.Vector2df
+import mwittmann.spooktober.util.Map2d
 
-class GameObjects(val dimensions: Dimensions2d) {
+class GameObjects(val dimensions: Dimensions2df) {
   assert(dimensions != null)
 
-  val collidableZombie = new Zombie(new Position2d(dimensions.x / 2 + 50, dimensions.y / 2 + 50))
-  val player = new Player(new Position2d(dimensions.x / 2, dimensions.y / 2))
+  val map = new Map2d(dimensions, Dimensions2df(20, 20))
+
+  val collidableZombie = new Zombie(new Position2df(dimensions.width / 2 + 50, dimensions.height / 2 + 50))
+  val player = new Player(new Position2df(dimensions.width / 2, dimensions.height / 2))
 
   val zombies: mutable.MutableList[Zombie] = mutable.MutableList[Zombie]()
 
@@ -24,8 +25,8 @@ class GameObjects(val dimensions: Dimensions2d) {
 
   def movePlayer(vector: Vector2df): Unit = {
     val newPlayerPos = player.getPosition.incX(vector.x).incY(vector.y)
-    val playerRect = new Rectangle(newPlayerPos.x, newPlayerPos.y, player.getDimensions.x, player.getDimensions.y)
-    val zombieRect = new Rectangle(collidableZombie.getPosition.x, collidableZombie.getPosition.y, collidableZombie.getDimensions.x, collidableZombie.getDimensions.y)
+    val playerRect = new Rectangle(newPlayerPos.x, newPlayerPos.y, player.getDimensions.width, player.getDimensions.height)
+    val zombieRect = new Rectangle(collidableZombie.getPosition.x, collidableZombie.getPosition.y, collidableZombie.getDimensions.width, collidableZombie.getDimensions.height)
 
     if (!playerRect.overlaps(zombieRect))
       player.movePosition(vector)
@@ -40,12 +41,12 @@ class GameObjects(val dimensions: Dimensions2d) {
       zombie.movePosition(mv)
 
       if (zombie.getPosition.x < 0) zombie.setPosition(zombie.getPosition.withX(0))
-      else if (zombie.getPosition.x > dimensions.x) zombie.setPosition(zombie.getPosition.withX(dimensions.x))
+      else if (zombie.getPosition.x > dimensions.width) zombie.setPosition(zombie.getPosition.withX(dimensions.width))
 
       if (zombie.getPosition.y < 0) zombie.setPosition(zombie.getPosition.withY(0))
-      else if (zombie.getPosition.y > dimensions.y) zombie.setPosition(zombie.getPosition.withY(dimensions.y))
+      else if (zombie.getPosition.y > dimensions.height) zombie.setPosition(zombie.getPosition.withY(dimensions.height))
     }
   }
 
-  def getPlayerPosition: Position2d = player.getPosition
+  def getPlayerPosition: Position2df = player.getPosition
 }

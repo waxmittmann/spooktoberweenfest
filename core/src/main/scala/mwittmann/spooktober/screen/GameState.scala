@@ -1,10 +1,10 @@
 package mwittmann.spooktober.screen
 
-import mwittmann.spooktober.unit.Dimensions2d
+import mwittmann.spooktober.unit.Dimensions2df
 
 case class GameState(
   gameFactor: Float = 0.1f,
   factor: Float = 5.0f,
   playerSpeed: Float = 10,
-  gameDimensions: Dimensions2d = new Dimensions2d(800, 800)
+  gameDimensions: Dimensions2df = new Dimensions2df(800, 800)
 )

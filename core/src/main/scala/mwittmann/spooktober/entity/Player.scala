@@ -1,16 +1,16 @@
 package mwittmann.spooktober.entity
 
-import mwittmann.spooktober.unit.{Dimensions2d, Position2d, Vector2df}
+import mwittmann.spooktober.unit.{Dimensions2df, Position2df, Vector2df}
 
-class Player(var position: Position2d) {
+class Player(var position: Position2df) {
   // Todo: Inc state time
   private[entity] val stateTime = 0
 
-  def getPosition: Position2d = position
+  def getPosition: Position2df = position
 
-  def getDimensions = new Dimensions2d(10f, 10f)
+  def getDimensions = new Dimensions2df(10f, 10f)
 
-  def setPosition(p: Position2d): Unit = {
+  def setPosition(p: Position2df): Unit = {
     this.position = p
   }
 

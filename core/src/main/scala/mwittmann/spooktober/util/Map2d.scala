@@ -1,6 +1,7 @@
 package mwittmann.spooktober.util
 
-import mwittmann.spooktober.util.Map2dO.{printlnd, MapStorable}
+import mwittmann.spooktober.unit.{Dimensions2df, Position2df}
+import mwittmann.spooktober.util.Map2dO.{MapStorable, printlnd}
 
 import scala.collection.mutable
 
@@ -9,30 +10,16 @@ object Map2dO {
 
   def printlnd(str: String) = if (debug) println(str) else ()
 
-  trait HasPosition {
-    val x: Float
-    val y: Float
-  }
-
-  trait HasDimensions {
-    val width: Float
-    val height: Float
-  }
-
-  case class Position(x: Float, y: Float) extends HasPosition
-  case class Dimensions(width: Float, height: Float) extends HasDimensions
-
-  case class MapStorable[A](position: HasPosition, dimensions: HasDimensions, item: A)
-
+  case class MapStorable[A](position: Position2df, dimensions: Dimensions2df, item: A)
 
   def main(args: Array[String]): Unit = {
-    val map2d = new Map2d[String](100.0f, 100.0f, 5.0f, 5.0f)
+    val map2d = new Map2d[String](Dimensions2df(100.0f, 100.0f), Dimensions2df(5.0f, 5.0f))
 
-    map2d.insert(MapStorable(Position(0, 0), Dimensions(4.9f, 4.9f), "ll"))
-    map2d.insert(MapStorable(Position(0, 5.0f), Dimensions(4.9f, 4.9f), "ul"))
-    map2d.insert(MapStorable(Position(5.0f, 0), Dimensions(4.9f, 4.9f), "lr"))
-    map2d.insert(MapStorable(Position(5.0f, 5.0f), Dimensions(4.9f, 4.9f), "ur"))
-    map2d.insert(MapStorable(Position(0, 0), Dimensions(10, 10), "a"))
+    map2d.insert(MapStorable(Position2df(0, 0), Dimensions2df(4.9f, 4.9f), "ll"))
+    map2d.insert(MapStorable(Position2df(0, 5.0f), Dimensions2df(4.9f, 4.9f), "ul"))
+    map2d.insert(MapStorable(Position2df(5.0f, 0), Dimensions2df(4.9f, 4.9f), "lr"))
+    map2d.insert(MapStorable(Position2df(5.0f, 5.0f), Dimensions2df(4.9f, 4.9f), "ur"))
+    map2d.insert(MapStorable(Position2df(0, 0), Dimensions2df(10, 10), "a"))
 
     println(map2d.get(0.1f, 0.1f)) //ll, a
     println(map2d.get(4.9f, 4.9f)) // ll, a
@@ -45,47 +32,33 @@ object Map2dO {
 
     println(map2d.get(5.1f, 5.1f))
     println(map2d.get(9.9f, 9.9f))
-
-
-    //    map2d.insert(MapStorable(Position(0, 0), Dimensions(20, 20), "a"))
-//    map2d.insert(MapStorable(Position(15, 15), Dimensions(5, 5), "b"))
-//    map2d.insert(MapStorable(Position(10, 10), Dimensions(1, 1), "c"))
-
-//    println(map2d.get(0.0f, 0.0f))
-//    println(map2d.get(10.0f, 10.0f))
-//    println(map2d.get(0.0f, 0.0f))
-//    println(map2d.get(11.0f, 11.0f))
-//    println(map2d.get(15.0f, 15.0f))
-//    println(map2d.get(16.0f, 16.0f))
   }
 
 }
 
 class Map2d[A](
-  mapWidth: Float,
-  mapHeight: Float,
-  nodeWidth: Float,
-  nodeHeight: Float
+  mapDimensions: Dimensions2df,
+  nodeDimensions: Dimensions2df
 ) {
-  assert(mapWidth > 0)
-  assert(mapWidth >= nodeWidth)
-  assert(mapHeight > 0)
-  assert(mapHeight >= nodeHeight)
+  assert(mapDimensions.width > 0)
+  assert(mapDimensions.width >= nodeDimensions.width)
+  assert(mapDimensions.height > 0)
+  assert(mapDimensions.height  >= nodeDimensions.height)
 
-  val horizontalNodeNr = Math.ceil(mapWidth / nodeWidth).toInt
-  val verticalNodeNr = Math.ceil(mapWidth / nodeWidth).toInt
+  val horizontalNodeNr = Math.ceil(mapDimensions.width / nodeDimensions.width).toInt
+  val verticalNodeNr = Math.ceil(mapDimensions.height / nodeDimensions.width).toInt
 
   val nodes = Array.ofDim[mutable.Set[MapStorable[A]]](horizontalNodeNr, verticalNodeNr)
 
   def insert(storable: MapStorable[A]): Unit = {
     val (startNodeX, startNodeY) = (
-      Math.floor(storable.position.x / nodeWidth).toInt,
-      Math.floor(storable.position.y / nodeHeight).toInt
+      Math.floor(storable.position.x / nodeDimensions.width).toInt,
+      Math.floor(storable.position.y / nodeDimensions.height).toInt
     )
 
     val (endNodeX, endNodeY) = (
-      Math.floor((storable.position.x + storable.dimensions.width) / nodeWidth).toInt,
-      Math.floor((storable.position.y + storable.dimensions.height) / nodeHeight).toInt
+      Math.floor((storable.position.x + storable.dimensions.width) / nodeDimensions.width).toInt,
+      Math.floor((storable.position.y + storable.dimensions.height) / nodeDimensions.height).toInt
     )
 
     for {
@@ -101,13 +74,13 @@ class Map2d[A](
 
   def remove(storable: MapStorable[A]): Unit = {
     val (startNodeX, startNodeY) = (
-      Math.floor(storable.position.x / nodeWidth).toInt,
-      Math.floor(storable.position.y / nodeHeight).toInt
+      Math.floor(storable.position.x / nodeDimensions.width).toInt,
+      Math.floor(storable.position.y / nodeDimensions.height).toInt
     )
 
     val (endNodeX, endNodeY) = (
-      Math.ceil((storable.position.x + storable.dimensions.width) / nodeWidth).toInt,
-      Math.ceil((storable.position.y + storable.dimensions.height) / nodeHeight).toInt
+      Math.ceil((storable.position.x + storable.dimensions.width) / nodeDimensions.width).toInt,
+      Math.ceil((storable.position.y + storable.dimensions.height) / nodeDimensions.height).toInt
     )
 
     for {
@@ -119,7 +92,7 @@ class Map2d[A](
   }
 
   def get(x: Float, y: Float): mutable.Set[MapStorable[A]] = {
-    printlnd(s"Get $x, $y returns ${(x / nodeWidth).toInt}, ${(y / nodeHeight).toInt}")
-    nodes((x / nodeWidth).toInt)((y / nodeHeight).toInt)
+    printlnd(s"Get $x, $y returns ${(x / nodeDimensions.width).toInt}, ${(y / nodeDimensions.height).toInt}")
+    nodes((x / nodeDimensions.width).toInt)((y / nodeDimensions.height).toInt)
   }
 }

@@ -34,8 +34,8 @@ class GameObjectsRenderer {
 
     val x = view.translateX(zombie.getPosition.x)
     val y = view.translateY(zombie.getPosition.y)
-    val width = view.translateWidth(zombie.getDimensions.x)
-    val height = view.translateHeight(zombie.getDimensions.y)
+    val width = view.translateWidth(zombie.getDimensions.width)
+    val height = view.translateHeight(zombie.getDimensions.height)
     val frame = animation.getKeyFrame(zombie.stateTime, Animation.ANIMATION_LOOPING)
     batch.draw(frame, x, y, width, height)
   }
@@ -44,8 +44,8 @@ class GameObjectsRenderer {
     val playerTexture = Assets.player
     val x = view.translateX(player.getPosition.x)
     val y = view.translateY(player.getPosition.y)
-    val width = view.translateWidth(player.getDimensions.x)
-    val height = view.translateHeight(player.getDimensions.y)
+    val width = view.translateWidth(player.getDimensions.width)
+    val height = view.translateHeight(player.getDimensions.height)
     batch.draw(playerTexture, x, y, width, height)
   }
 

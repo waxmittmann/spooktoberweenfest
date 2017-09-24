@@ -2,7 +2,7 @@ package mwittmann.spooktober.screen
 
 import com.badlogic.gdx.{Gdx, Input}
 import mwittmann.spooktober.entity.Zombie
-import mwittmann.spooktober.unit.{Position2d, Vector2df}
+import mwittmann.spooktober.unit.{Position2df, Vector2df}
 import mwittmann.spooktober.util.GlobalRandom
 
 object GameInput {
@@ -25,9 +25,9 @@ object GameInput {
 
     if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
       for { _ <- 0 to 200 } yield {
-        val x = GlobalRandom.random.nextInt(gameDimensions.x.toInt)
-        val y = GlobalRandom.random.nextInt(gameDimensions.y.toInt)
-        gameObjects.addZombie(Zombie(Position2d(x, y)))
+        val x = GlobalRandom.random.nextInt(gameDimensions.width.toInt)
+        val y = GlobalRandom.random.nextInt(gameDimensions.height.toInt)
+        gameObjects.addZombie(Zombie(Position2df(x, y)))
       }
     }
 

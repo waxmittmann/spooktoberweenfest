@@ -8,7 +8,7 @@ import com.badlogic.gdx.ScreenAdapter
 import com.badlogic.gdx.graphics.GL20
 import mwittmann.spooktober.asset.me.mwittmann.hellogdx.asset.Assets
 import mwittmann.spooktober.entity.Zombie
-import mwittmann.spooktober.unit.{Dimensions2d, Position2d, Vector2df}
+import mwittmann.spooktober.unit.{Dimensions2df, Position2df, Vector2df}
 import mwittmann.spooktober.util.{DebugDraw, GlobalRandom}
 
 class GameScreen() extends ScreenAdapter {
@@ -44,7 +44,7 @@ class GameScreen() extends ScreenAdapter {
     val screenHeight = Gdx.graphics.getHeight
     val gameWidth = screenWidth * gameState.gameFactor
     val gameHeight = screenHeight * gameState.gameFactor
-    val view = new View(gameObjects.player.getPosition.x + gameObjects.player.getDimensions.x / 2, gameObjects.player.getPosition.y + gameObjects.player.getDimensions.y / 2, gameWidth, gameHeight, screenWidth / 2, screenHeight / 2, screenWidth, screenHeight)
+    val view = new View(gameObjects.player.getPosition.x + gameObjects.player.getDimensions.width / 2, gameObjects.player.getPosition.y + gameObjects.player.getDimensions.height / 2, gameWidth, gameHeight, screenWidth / 2, screenHeight / 2, screenWidth, screenHeight)
     gameObjectsRenderer.render(gameObjects, view)
     debug.tick(delta, gameObjects)
   }
