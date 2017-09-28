@@ -4,22 +4,22 @@ import mwittmann.spooktober.unit.{Dimensions2df, Position2df, Vector2df}
 import mwittmann.spooktober.util.GlobalRandom
 
 // Todo: Inc state time
-case class Zombie(var position: Position2df) {
+class Zombie extends Entity {
   // Todo: Should store in renderer probably
   var stateTime: Float = GlobalRandom.random.nextFloat // So that all the anims aren't synced
 
   val `type`: Int = GlobalRandom.random.nextInt(2)
   val dimensions = new Dimensions2df(10.0f, 10.0f)
 
-  def movePosition(vector: Vector2df): Unit = {
-    position = position.incX(vector.x).incY(vector.y)
-  }
-
-  def getPosition: Position2df = position
-
-  def setPosition(position: Position2df): Unit = {
-    this.position = position
-  }
+//  def movePosition(vector: Vector2df): Unit = {
+//    position = position.incX(vector.x).incY(vector.y)
+//  }
+//
+//  def getPosition: Position2df = position
+//
+//  def setPosition(position: Position2df): Unit = {
+//    this.position = position
+//  }
 
   def getDimensions: Dimensions2df = dimensions
 
