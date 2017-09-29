@@ -2,8 +2,8 @@ package mwittmann.spooktober.screen
 
 import com.badlogic.gdx.{Gdx, Input}
 import mwittmann.spooktober.entity.Zombie
-import mwittmann.spooktober.unit.{Position2df, Vector2df}
-import mwittmann.spooktober.util.GlobalRandom
+import mwittmann.spooktober.unit.{Dimensions2df, Position2df, Vector2df}
+import mwittmann.spooktober.util.{GlobalRandom, MapStorable}
 
 object GameInput {
   def movePlayer(
@@ -23,13 +23,14 @@ object GameInput {
 
     if (Gdx.input.isKeyPressed(Input.Keys.S)) gameObjects.movePlayer(Vector2df(0f, -playerSpeed * delta * factor))
 
-//    if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
-//      for { _ <- 0 to 200 } yield {
-//        val x = GlobalRandom.random.nextInt(gameDimensions.width.toInt)
-//        val y = GlobalRandom.random.nextInt(gameDimensions.height.toInt)
-//        gameObjects.addZombie(Zombie(Position2df(x, y)))
-//      }
-//    }
+    if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
+      for { _ <- 0 to 200 } yield {
+        val x = GlobalRandom.random.nextInt(gameDimensions.width.toInt)
+        val y = GlobalRandom.random.nextInt(gameDimensions.height.toInt)
+        val zombie = new Zombie()
+        gameObjects.addZombie(MapStorable(Position2df(x, y), zombie.getDimensions, zombie))
+      }
+    }
 
     if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) newGameFactor *= (1 + 0.5f * delta)
 
