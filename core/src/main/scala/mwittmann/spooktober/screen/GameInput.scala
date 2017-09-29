@@ -23,13 +23,13 @@ object GameInput {
 
     if (Gdx.input.isKeyPressed(Input.Keys.S)) gameObjects.movePlayer(Vector2df(0f, -playerSpeed * delta * factor))
 
-    if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
-      for { _ <- 0 to 200 } yield {
-        val x = GlobalRandom.random.nextInt(gameDimensions.width.toInt)
-        val y = GlobalRandom.random.nextInt(gameDimensions.height.toInt)
-        gameObjects.addZombie(Zombie(Position2df(x, y)))
-      }
-    }
+//    if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
+//      for { _ <- 0 to 200 } yield {
+//        val x = GlobalRandom.random.nextInt(gameDimensions.width.toInt)
+//        val y = GlobalRandom.random.nextInt(gameDimensions.height.toInt)
+//        gameObjects.addZombie(Zombie(Position2df(x, y)))
+//      }
+//    }
 
     if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) newGameFactor *= (1 + 0.5f * delta)
 

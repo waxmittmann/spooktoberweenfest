@@ -1,5 +1,6 @@
 package mwittmann.spooktober.util
 
+import mwittmann.spooktober.entity.Player
 import mwittmann.spooktober.unit.{Dimensions2df, Position2df}
 import mwittmann.spooktober.util.Map2dO.printlnd
 
@@ -38,7 +39,28 @@ class Map2d[A](
   mapDimensions: Dimensions2df,
   nodeDimensions: Dimensions2df
 ) {
-  case class MapStorable[S >: A](position: Position2df, dimensions: Dimensions2df, item: S)
+
+  def inBounds(mapStorable: MapStorable): Boolean = {
+    (mapStorable.position.x >= 0 &&
+      mapStorable.position.y >= 0 &&
+      mapStorable.position.x + mapStorable.dimensions.width < mapDimensions.width &&
+      mapStorable.position.y + mapStorable.dimensions.height <= mapDimensions.height)
+  }
+
+  def move(entity: A, newLoc: MapStorable): Unit = {
+    assert(remove(entity))
+    insert(newLoc)
+  }
+
+  def getEntity(player: A): Option[MapStorable] = {
+    itemToMapStorable.get(player)
+  }
+
+  def getEntityUnsafe(player: A): MapStorable = {
+    itemToMapStorable(player)
+  }
+
+  case class MapStorable(position: Position2df, dimensions: Dimensions2df, item: A)
 
   assert(mapDimensions.width > 0)
   assert(mapDimensions.width >= nodeDimensions.width)
@@ -48,18 +70,21 @@ class Map2d[A](
   val horizontalNodeNr = Math.ceil(mapDimensions.width / nodeDimensions.width).toInt
   val verticalNodeNr = Math.ceil(mapDimensions.height / nodeDimensions.width).toInt
 
-  val nodes = Array.ofDim[Set[MapStorable[A]]](horizontalNodeNr, verticalNodeNr)
+  val nodes = Array.ofDim[Set[MapStorable]](horizontalNodeNr, verticalNodeNr)
 
 //  /type NodeIndex = (Int, Int)
 
   case class NodeIndex(x: Int, y: Int)
 
   val itemToNodes: mutable.HashMap[A, Set[NodeIndex]] = new mutable.HashMap[A, Set[NodeIndex]]()
+  val itemToMapStorable: mutable.HashMap[A, MapStorable] = new mutable.HashMap[A, MapStorable]()
 
-  def insert[S <: A](storable: MapStorable[S]): Unit = {
+  def insert(storable: MapStorable): Unit = {
     if (itemToNodes.contains(storable.item)) {
       throw new Exception(s"Map already contains ${storable.item}")
     }
+
+    itemToMapStorable += (storable.item -> storable)
 
     val (startNodeX, startNodeY) = (
       Math.floor(storable.position.x / nodeDimensions.width).toInt,
@@ -102,6 +127,10 @@ class Map2d[A](
 
         nodes(nodeAt.x)(nodeAt.y) = withoutItem
       })
+
+      itemToMapStorable -= item
+      itemToNodes -= item
+
       true
     })
   }
@@ -125,12 +154,12 @@ class Map2d[A](
 //    }
 //  }
 
-  def getNode(x: Float, y: Float): Set[MapStorable[A]] = {
+  def getNode(x: Float, y: Float): Set[MapStorable] = {
     printlnd(s"Get $x, $y returns ${(x / nodeDimensions.width).toInt}, ${(y / nodeDimensions.height).toInt}")
     nodes((x / nodeDimensions.width).toInt)((y / nodeDimensions.height).toInt)
   }
 
-  def getNodes(xStart: Float, yStart: Float, width: Float, height: Float): Set[MapStorable[A]] = {
+  def getNodes(xStart: Float, yStart: Float, width: Float, height: Float): Set[MapStorable] = {
     val xLimit = Math.min(
       ((xStart + width) / nodeDimensions.width).toInt,
       nodes.length
@@ -141,17 +170,17 @@ class Map2d[A](
       nodes(0).length
     )
 
-    val x2: immutable.Seq[Set[MapStorable[A]]] = for {
+    val x2: immutable.Seq[Set[MapStorable]] = for {
       x <- (xStart / nodeDimensions.width).toInt to xLimit
       y <- (yStart / nodeDimensions.height).toInt to yLimit
     } yield {
-      val x1: Set[MapStorable[A]] =  nodes(x)(y)
+      val x1: Set[MapStorable] =  nodes(x)(y)
       x1
     }
 
-    val x3: Set[Set[MapStorable[A]]] = x2.toSet
+    val x3: Set[Set[MapStorable]] = x2.toSet
 
-    val x4: Set[MapStorable[A]] = x3.flatten
+    val x4: Set[MapStorable] = x3.flatten
 
       //.toSet.flatten
     x4

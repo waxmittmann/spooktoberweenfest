@@ -1,6 +1,9 @@
 package mwittmann.spooktober.unit
 
 case class Position2df(x: Float, y: Float) extends Unit2d[Float] {
+  // Todo: Make generic
+  def add(vector: Vector2df): Position2df = this.copy(x + vector.x, y + vector.y)
+
   def withX(_x: Float) = new Position2df(_x, y)
 
   def withY(_y: Float) = new Position2df(x, _y)
