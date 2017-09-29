@@ -6,7 +6,7 @@ import mwittmann.spooktober.entity.{Entity, Player, Zombie}
 import mwittmann.spooktober.unit.Dimensions2df
 import mwittmann.spooktober.unit.Position2df
 import mwittmann.spooktober.unit.Vector2df
-import mwittmann.spooktober.util.Map2d
+import mwittmann.spooktober.util.{Map2d, MapStorable}
 
 class GameObjects(val dimensions: Dimensions2df) {
   assert(dimensions != null)
@@ -15,21 +15,20 @@ class GameObjects(val dimensions: Dimensions2df) {
 
   val (mapZombie) = {
     val zombie = new Zombie()
-    (map.MapStorable(new Position2df(10.0f, 10.0f), zombie.getDimensions, zombie))
+    (MapStorable(new Position2df(10.0f, 10.0f), zombie.getDimensions, zombie))
   }
   map.insert(mapZombie)
 
   val (mapPlayer) = {
     val player = new Player()
-    (map.MapStorable(new Position2df(0.0f, 0.0f), player.getDimensions, player))
+    (MapStorable(new Position2df(0.0f, 0.0f), player.getDimensions, player))
   }
   map.insert(mapPlayer)
 
-  val zombies: mutable.MutableList[Zombie] = mutable.MutableList[Zombie]()
-//  zombies += collidableZombie.item
-  zombies += mapZombie.item
+  val zombies: mutable.MutableList[MapStorable[Zombie]] = mutable.MutableList[MapStorable[Zombie]]()
+  zombies += mapZombie
 
-  def addZombie(zombie: Zombie): Unit = zombies += zombie
+  def addZombie(zombie: MapStorable[Zombie]): Unit = zombies += zombie
 
   def movePlayer(vector: Vector2df): Unit = {
 

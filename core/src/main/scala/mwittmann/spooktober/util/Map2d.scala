@@ -8,32 +8,10 @@ import scala.collection.{immutable, mutable}
 
 object Map2dO {
   val debug = false
-
   def printlnd(str: String) = if (debug) println(str) else ()
-
-  def main(args: Array[String]): Unit = {
-    val map2d = new Map2d[String](Dimensions2df(100.0f, 100.0f), Dimensions2df(5.0f, 5.0f))
-
-    map2d.insert(map2d.MapStorable(Position2df(0, 0), Dimensions2df(4.9f, 4.9f), "ll"))
-    map2d.insert(map2d.MapStorable(Position2df(0, 5.0f), Dimensions2df(4.9f, 4.9f), "ul"))
-    map2d.insert(map2d.MapStorable(Position2df(5.0f, 0), Dimensions2df(4.9f, 4.9f), "lr"))
-    map2d.insert(map2d.MapStorable(Position2df(5.0f, 5.0f), Dimensions2df(4.9f, 4.9f), "ur"))
-    map2d.insert(map2d.MapStorable(Position2df(0, 0), Dimensions2df(10, 10), "a"))
-
-    println(map2d.getNode(0.1f, 0.1f)) //ll, a
-    println(map2d.getNode(4.9f, 4.9f)) // ll, a
-
-    println(map2d.getNode(0.1f, 5.1f)) //ul, a
-    println(map2d.getNode(4.9f, 9.9f)) //ul, a
-
-    println(map2d.getNode(5.1f, 0.1f)) //lr, a
-    println(map2d.getNode(9.9f, 4.9f)) //lr, a
-
-    println(map2d.getNode(5.1f, 5.1f))
-    println(map2d.getNode(9.9f, 9.9f))
-  }
-
 }
+
+case class MapStorable[+S](position: Position2df, dimensions: Dimensions2df, item: S)
 
 class Map2d[A](
   mapDimensions: Dimensions2df,
@@ -60,8 +38,6 @@ class Map2d[A](
     itemToMapStorable(player)
   }
 
-  case class MapStorable[+S <: A](position: Position2df, dimensions: Dimensions2df, item: S)
-
   assert(mapDimensions.width > 0)
   assert(mapDimensions.width >= nodeDimensions.width)
   assert(mapDimensions.height > 0)
@@ -71,8 +47,6 @@ class Map2d[A](
   val verticalNodeNr = Math.ceil(mapDimensions.height / nodeDimensions.width).toInt
 
   val nodes = Array.ofDim[Set[MapStorable[A]]](horizontalNodeNr, verticalNodeNr)
-
-//  /type NodeIndex = (Int, Int)
 
   case class NodeIndex(x: Int, y: Int)
 

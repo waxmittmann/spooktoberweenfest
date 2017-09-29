@@ -7,7 +7,7 @@ import mwittmann.spooktober.asset.Animation
 import mwittmann.spooktober.asset.me.mwittmann.hellogdx.asset.Assets
 import mwittmann.spooktober.entity.{Player, Zombie}
 import mwittmann.spooktober.unit.Position2df
-import mwittmann.spooktober.util.DebugDraw
+import mwittmann.spooktober.util.{DebugDraw, MapStorable}
 
 
 class GameObjectsRenderer {
@@ -19,27 +19,27 @@ class GameObjectsRenderer {
     batch.begin()
     batch.setProjectionMatrix(batch.getProjectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth, Gdx.graphics.getHeight))
 
-//    for (zombie <- gameObjects.zombies) {
-//      renderZombie(zombie, view)
-//    }
+    for (zombie <- gameObjects.zombies) {
+      renderZombie(zombie, view)
+    }
 
     renderPlayer(gameObjects.mapPlayer.item, gameObjects.getPlayerPosition, view)
     batch.end()
   }
 
-//  def renderZombie(zombie: Zombie, view: View): Unit = {
-//    var animation: Animation = null
-//
-//    if (zombie.`type` == 0) animation = Assets.zombieA
-//    else animation = Assets.zombieB
-//
-//    val x = view.translateX(zombie.getPosition.x)
-//    val y = view.translateY(zombie.getPosition.y)
-//    val width = view.translateWidth(zombie.getDimensions.width)
-//    val height = view.translateHeight(zombie.getDimensions.height)
-//    val frame = animation.getKeyFrame(zombie.stateTime, Animation.ANIMATION_LOOPING)
-//    batch.draw(frame, x, y, width, height)
-//  }
+  def renderZombie(zombie: MapStorable[Zombie], view: View): Unit = {
+    var animation: Animation = null
+
+    if (zombie.item.`type` == 0) animation = Assets.zombieA
+    else animation = Assets.zombieB
+
+    val x = view.translateX(zombie.position.x)
+    val y = view.translateY(zombie.position.y)
+    val width = view.translateWidth(zombie.dimensions.width)
+    val height = view.translateHeight(zombie.dimensions.height)
+    val frame = animation.getKeyFrame(zombie.item.stateTime, Animation.ANIMATION_LOOPING)
+    batch.draw(frame, x, y, width, height)
+  }
 
   def renderPlayer(player: Player, position: Position2df, view: View): Unit = {
     val playerTexture = Assets.player
