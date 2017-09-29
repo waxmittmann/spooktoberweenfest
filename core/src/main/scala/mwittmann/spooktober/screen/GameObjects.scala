@@ -21,14 +21,19 @@ class GameObjects(val dimensions: Dimensions2df) {
 
   val (mapPlayer) = {
     val player = new Player()
-    (MapStorable(new Position2df(0.0f, 0.0f), player.getDimensions, player))
+    (MapStorable(new Position2df(20.0f, 20.0f), player.getDimensions, player))
   }
   map.insert(mapPlayer)
 
   val zombies: mutable.MutableList[MapStorable[Zombie]] = mutable.MutableList[MapStorable[Zombie]]()
   zombies += mapZombie
 
-  def addZombie(zombie: MapStorable[Zombie]): Unit = zombies += zombie
+  def addZombie(zombie: MapStorable[Zombie]): Unit = {
+    if (map.inBounds(zombie)) {
+      map.insert(zombie)
+      zombies += zombie
+    }
+  }
 
   def movePlayer(vector: Vector2df): Unit = {
 
@@ -55,17 +60,19 @@ class GameObjects(val dimensions: Dimensions2df) {
 
   // Todo
   def moveZombies(deltaSeconds: Float): Unit = {
-//    for (zombie <- zombies) {
-//      val mv = zombie.getMove(deltaSeconds)
-//
-//      zombie.movePosition(mv)
-//
+    for (zombie <- zombies) {
+      val mv = zombie.item.getMove(deltaSeconds)
+
+      val newZombiePos = zombie.position.add(mv)
+
+      map.move(zombie.item, newZombiePos)
+
 //      if (zombie.getPosition.x < 0) zombie.setPosition(zombie.getPosition.withX(0))
 //      else if (zombie.getPosition.x > dimensions.width) zombie.setPosition(zombie.getPosition.withX(dimensions.width))
 //
 //      if (zombie.getPosition.y < 0) zombie.setPosition(zombie.getPosition.withY(0))
 //      else if (zombie.getPosition.y > dimensions.height) zombie.setPosition(zombie.getPosition.withY(dimensions.height))
-//    }
+    }
   }
 
   def getPlayerPosition: Position2df = map.getEntityUnsafe(mapPlayer.item).position

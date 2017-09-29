@@ -18,16 +18,25 @@ class Map2d[A](
   nodeDimensions: Dimensions2df
 ) {
 
+  // Todo: 0 should be ok (right now inserts at -1 and breaks)
   def inBounds(mapStorable: MapStorable[A]): Boolean = {
-    (mapStorable.position.x >= 0 &&
-      mapStorable.position.y >= 0 &&
+    (mapStorable.position.x > 0 &&
+      mapStorable.position.y > 0 &&
       mapStorable.position.x + mapStorable.dimensions.width < mapDimensions.width &&
-      mapStorable.position.y + mapStorable.dimensions.height <= mapDimensions.height)
+      mapStorable.position.y + mapStorable.dimensions.height < mapDimensions.height)
   }
 
   def move(entity: A, newLoc: MapStorable[A]): Unit = {
     assert(remove(entity))
     insert(newLoc)
+  }
+
+  def move(entity: A, newLoc: Position2df): Unit = {
+    itemToMapStorable.get(entity).map { mapStorable => {
+      val newStorable = mapStorable.copy(newLoc)
+      assert(remove(entity))
+      insert(newStorable)
+    }}.getOrElse(throw new Exception(s"Can't move $entity because it's not on the map!"))
   }
 
   def getEntity(player: A): Option[MapStorable[A]] = {
