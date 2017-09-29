@@ -40,27 +40,27 @@ class Map2d[A](
   nodeDimensions: Dimensions2df
 ) {
 
-  def inBounds(mapStorable: MapStorable): Boolean = {
+  def inBounds(mapStorable: MapStorable[A]): Boolean = {
     (mapStorable.position.x >= 0 &&
       mapStorable.position.y >= 0 &&
       mapStorable.position.x + mapStorable.dimensions.width < mapDimensions.width &&
       mapStorable.position.y + mapStorable.dimensions.height <= mapDimensions.height)
   }
 
-  def move(entity: A, newLoc: MapStorable): Unit = {
+  def move(entity: A, newLoc: MapStorable[A]): Unit = {
     assert(remove(entity))
     insert(newLoc)
   }
 
-  def getEntity(player: A): Option[MapStorable] = {
+  def getEntity(player: A): Option[MapStorable[A]] = {
     itemToMapStorable.get(player)
   }
 
-  def getEntityUnsafe(player: A): MapStorable = {
+  def getEntityUnsafe(player: A): MapStorable[A] = {
     itemToMapStorable(player)
   }
 
-  case class MapStorable(position: Position2df, dimensions: Dimensions2df, item: A)
+  case class MapStorable[+S <: A](position: Position2df, dimensions: Dimensions2df, item: S)
 
   assert(mapDimensions.width > 0)
   assert(mapDimensions.width >= nodeDimensions.width)
@@ -70,16 +70,16 @@ class Map2d[A](
   val horizontalNodeNr = Math.ceil(mapDimensions.width / nodeDimensions.width).toInt
   val verticalNodeNr = Math.ceil(mapDimensions.height / nodeDimensions.width).toInt
 
-  val nodes = Array.ofDim[Set[MapStorable]](horizontalNodeNr, verticalNodeNr)
+  val nodes = Array.ofDim[Set[MapStorable[A]]](horizontalNodeNr, verticalNodeNr)
 
 //  /type NodeIndex = (Int, Int)
 
   case class NodeIndex(x: Int, y: Int)
 
   val itemToNodes: mutable.HashMap[A, Set[NodeIndex]] = new mutable.HashMap[A, Set[NodeIndex]]()
-  val itemToMapStorable: mutable.HashMap[A, MapStorable] = new mutable.HashMap[A, MapStorable]()
+  val itemToMapStorable: mutable.HashMap[A, MapStorable[A]] = new mutable.HashMap[A, MapStorable[A]]()
 
-  def insert(storable: MapStorable): Unit = {
+  def insert(storable: MapStorable[A]): Unit = {
     if (itemToNodes.contains(storable.item)) {
       throw new Exception(s"Map already contains ${storable.item}")
     }
@@ -154,12 +154,12 @@ class Map2d[A](
 //    }
 //  }
 
-  def getNode(x: Float, y: Float): Set[MapStorable] = {
+  def getNode(x: Float, y: Float): Set[MapStorable[A]] = {
     printlnd(s"Get $x, $y returns ${(x / nodeDimensions.width).toInt}, ${(y / nodeDimensions.height).toInt}")
     nodes((x / nodeDimensions.width).toInt)((y / nodeDimensions.height).toInt)
   }
 
-  def getNodes(xStart: Float, yStart: Float, width: Float, height: Float): Set[MapStorable] = {
+  def getNodes(xStart: Float, yStart: Float, width: Float, height: Float): Set[MapStorable[A]] = {
     val xLimit = Math.min(
       ((xStart + width) / nodeDimensions.width).toInt,
       nodes.length
@@ -170,17 +170,17 @@ class Map2d[A](
       nodes(0).length
     )
 
-    val x2: immutable.Seq[Set[MapStorable]] = for {
+    val x2: immutable.Seq[Set[MapStorable[A]]] = for {
       x <- (xStart / nodeDimensions.width).toInt to xLimit
       y <- (yStart / nodeDimensions.height).toInt to yLimit
     } yield {
-      val x1: Set[MapStorable] =  nodes(x)(y)
+      val x1: Set[MapStorable[A]] =  nodes(x)(y)
       x1
     }
 
-    val x3: Set[Set[MapStorable]] = x2.toSet
+    val x3: Set[Set[MapStorable[A]]] = x2.toSet
 
-    val x4: Set[MapStorable] = x3.flatten
+    val x4: Set[MapStorable[A]] = x3.flatten
 
       //.toSet.flatten
     x4

@@ -44,7 +44,7 @@ class GameScreen() extends ScreenAdapter {
     val screenHeight = Gdx.graphics.getHeight
     val gameWidth = screenWidth * gameState.gameFactor
     val gameHeight = screenHeight * gameState.gameFactor
-    val view = new View(gameObjects.getPlayerPosition.x + gameObjects.player.getDimensions.width / 2, gameObjects.getPlayerPosition.y + gameObjects.player.getDimensions.height / 2, gameWidth, gameHeight, screenWidth / 2, screenHeight / 2, screenWidth, screenHeight)
+    val view = new View(gameObjects.getPlayerPosition.x + gameObjects.mapPlayer.item.getDimensions.width / 2, gameObjects.getPlayerPosition.y + gameObjects.mapPlayer.item.getDimensions.height / 2, gameWidth, gameHeight, screenWidth / 2, screenHeight / 2, screenWidth, screenHeight)
     gameObjectsRenderer.render(gameObjects, view)
     debug.tick(delta, gameObjects)
   }

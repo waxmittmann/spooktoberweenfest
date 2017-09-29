@@ -23,7 +23,7 @@ class GameObjectsRenderer {
 //      renderZombie(zombie, view)
 //    }
 
-    renderPlayer(gameObjects.player, gameObjects.getPlayerPosition, view)
+    renderPlayer(gameObjects.mapPlayer.item, gameObjects.getPlayerPosition, view)
     batch.end()
   }
 

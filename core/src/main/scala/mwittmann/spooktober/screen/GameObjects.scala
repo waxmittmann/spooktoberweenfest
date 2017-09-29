@@ -13,28 +13,28 @@ class GameObjects(val dimensions: Dimensions2df) {
 
   val map = new Map2d[Entity](dimensions, Dimensions2df(20, 20))
 
-  val (collidableZombie, mapZombie) = {
+  val (mapZombie) = {
     val zombie = new Zombie()
-    (zombie, map.MapStorable(new Position2df(10.0f, 10.0f), zombie.getDimensions, zombie))
+    (map.MapStorable(new Position2df(10.0f, 10.0f), zombie.getDimensions, zombie))
   }
   map.insert(mapZombie)
 
-  val (player, mapPlayer) = {
+  val (mapPlayer) = {
     val player = new Player()
-    (player, map.MapStorable(new Position2df(0.0f, 0.0f), player.getDimensions, player))
+    (map.MapStorable(new Position2df(0.0f, 0.0f), player.getDimensions, player))
   }
   map.insert(mapPlayer)
 
   val zombies: mutable.MutableList[Zombie] = mutable.MutableList[Zombie]()
 //  zombies += collidableZombie.item
-  zombies += collidableZombie
+  zombies += mapZombie.item
 
   def addZombie(zombie: Zombie): Unit = zombies += zombie
 
   def movePlayer(vector: Vector2df): Unit = {
 
-    val playerLoc = map.getEntityUnsafe(player)
-    val collidableZombieLoc = map.getEntityUnsafe(collidableZombie)
+    val playerLoc = map.getEntityUnsafe(mapPlayer.item)
+    val collidableZombieLoc = map.getEntityUnsafe(mapZombie.item)
 
     val newPlayerPos = playerLoc.position.incX(vector.x).incY(vector.y)
     val playerRect = new Rectangle(newPlayerPos.x, newPlayerPos.y, playerLoc.dimensions.width, playerLoc.dimensions.height)
@@ -49,7 +49,7 @@ class GameObjects(val dimensions: Dimensions2df) {
 
     if (!playerRect.overlaps(zombieRect) && map.inBounds(playerLoc.copy(position = newPlayerPos))) {
       val newPlayerLoc = playerLoc.copy(position = playerLoc.position.add(vector))
-      map.move(player, newPlayerLoc)
+      map.move(mapPlayer.item, newPlayerLoc)
     } else
       System.out.println("Blocked")
   }
@@ -69,5 +69,5 @@ class GameObjects(val dimensions: Dimensions2df) {
 //    }
   }
 
-  def getPlayerPosition: Position2df = map.getEntityUnsafe(player).position
+  def getPlayerPosition: Position2df = map.getEntityUnsafe(mapPlayer.item).position
 }
