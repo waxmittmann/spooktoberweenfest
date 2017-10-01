@@ -16,12 +16,13 @@ class GameScreen() extends ScreenAdapter {
   Assets.load()
 
   var gameState = GameState()
-
   val gameObjects = new GameObjects(gameState.gameDimensions)
   val gameObjectsRenderer = new GameObjectsRenderer
   val debug = new DebugDraw
 
-  val waitFor: Float = 0.025f
+  // Todo: Does this do any good?
+  //val waitFor: Float = 0.025f
+  val waitFor: Float = 0
   private[screen] var sinceLast: Float = 0
 
   override def render(deltaSeconds: Float): Unit = {
@@ -44,7 +45,17 @@ class GameScreen() extends ScreenAdapter {
     val screenHeight = Gdx.graphics.getHeight
     val gameWidth = screenWidth * gameState.gameFactor
     val gameHeight = screenHeight * gameState.gameFactor
-    val view = new View(gameObjects.getPlayerPosition.x + gameObjects.mapPlayer.item.getDimensions.width / 2, gameObjects.getPlayerPosition.y + gameObjects.mapPlayer.item.getDimensions.height / 2, gameWidth, gameHeight, screenWidth / 2, screenHeight / 2, screenWidth, screenHeight)
+    // Todo: Probably don't offset this (see View)
+    val view = new View(
+      gameObjects.getPlayerPosition.x + gameObjects.getPlayerDimensions.width / 2,
+      gameObjects.getPlayerPosition.y + gameObjects.getPlayerDimensions.height / 2,
+      gameWidth,
+      gameHeight,
+      screenWidth / 2,
+      screenHeight / 2,
+      screenWidth,
+      screenHeight
+    )
     gameObjectsRenderer.render(gameObjects, view)
     debug.tick(delta, gameObjects)
   }

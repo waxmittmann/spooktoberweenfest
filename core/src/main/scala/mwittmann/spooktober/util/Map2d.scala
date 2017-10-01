@@ -1,15 +1,8 @@
 package mwittmann.spooktober.util
 
-import mwittmann.spooktober.entity.Player
 import mwittmann.spooktober.unit.{Dimensions2df, Position2df}
-import mwittmann.spooktober.util.Map2dO.printlnd
 
 import scala.collection.{immutable, mutable}
-
-object Map2dO {
-  val debug = false
-  def printlnd(str: String) = if (debug) println(str) else ()
-}
 
 case class MapStorable[+S](position: Position2df, dimensions: Dimensions2df, item: S)
 
@@ -18,14 +11,12 @@ class Map2d[A](
   nodeDimensions: Dimensions2df
 ) {
   def inBounds(newZombiePos: Position2df, dimensions: Dimensions2df): Boolean = {
-    (newZombiePos.x >= 0 &&
+    newZombiePos.x >= 0 &&
       newZombiePos.y >= 0 &&
       (newZombiePos.x + dimensions.width) < mapDimensions.width &&
-      (newZombiePos.y + dimensions.height) < mapDimensions.height)
+      (newZombiePos.y + dimensions.height) < mapDimensions.height
   }
 
-
-  // Todo: 0 should be ok (right now inserts at -1 and breaks)
   def inBounds(mapStorable: MapStorable[A]): Boolean = {
     inBounds(mapStorable.position, mapStorable.dimensions)
   }
@@ -96,8 +87,6 @@ class Map2d[A](
         xAt <- startNodeX to endNodeX
         yAt <- startNodeY to endNodeY
       } yield {
-        printlnd(s"Inserting $storable at $xAt, $yAt")
-
         if (nodes(xAt)(yAt) == null)
           nodes(xAt)(yAt) = Set(storable)
         else
@@ -131,7 +120,6 @@ class Map2d[A](
   }
 
   def getNode(x: Float, y: Float): Set[MapStorable[A]] = {
-    printlnd(s"Get $x, $y returns ${(x / nodeDimensions.width).toInt}, ${(y / nodeDimensions.height).toInt}")
     nodes((x / nodeDimensions.width).toInt)((y / nodeDimensions.height).toInt)
   }
 
@@ -149,19 +137,12 @@ class Map2d[A](
       nodes(0).length - 1
     )
 
-    val x2: immutable.Seq[Set[MapStorable[A]]] = for {
+    (for {
       x <- (adjustedXStart / nodeDimensions.width).toInt to xLimit
       y <- (adjustedYStart / nodeDimensions.height).toInt to yLimit
     } yield {
-      val x1: Set[MapStorable[A]] = nodes(x)(y)
-      if (x1 == null) Set.empty[MapStorable[A]] else x1
-    }
-
-    val x3: Set[Set[MapStorable[A]]] = x2.toSet
-
-    val x4: Set[MapStorable[A]] = x3.flatten
-
-    x4
+      if (nodes(x)(y) == null) Set.empty[MapStorable[A]] else nodes(x)(y)
+    }).toSet.flatten
   }
 
 }

@@ -15,7 +15,7 @@ class GameObjectsRenderer {
     batch.begin()
     batch.setProjectionMatrix(batch.getProjectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth, Gdx.graphics.getHeight))
 
-    val objectsToRender = gameObjects.get(view)
+    val objectsToRender = gameObjects.getEntities(view)
     for (renderable <- objectsToRender) {
       render(view, renderable)
     }

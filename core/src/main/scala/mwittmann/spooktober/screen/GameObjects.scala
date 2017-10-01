@@ -9,36 +9,25 @@ import mwittmann.spooktober.unit.Vector2df
 import mwittmann.spooktober.util.{Map2d, MapStorable}
 
 class GameObjects(val dimensions: Dimensions2df) {
-  def get(view: View): Set[MapStorable[Entity]] = {
+  val map = new Map2d[Entity](dimensions, Dimensions2df(20, 20))
+
+  val zombies = mutable.MutableList[Zombie]()
+
+  // Temporarily hardcoded zombie
+  val zombie = new Zombie()
+  map.insert(MapStorable(Position2df(10.0f, 10.0f), zombie.getDimensions, zombie))
+  zombies += zombie
+
+  val player = new Player()
+  map.insert(MapStorable(Position2df(20.0f, 20.0f), player.getDimensions, player))
+
+  def getEntities(view: View): Set[MapStorable[Entity]] = {
     map.getNodes(
       view.gameX - view.gameWidth / 2,
       view.gameY - view.gameHeight / 2,
       view.gameWidth,
       view.gameHeight)
   }
-
-  def getZombies(): mutable.MutableList[MapStorable[Zombie]] = {
-    zombies.map(map.getEntityUnsafe)
-  }
-
-  assert(dimensions != null)
-
-  val map = new Map2d[Entity](dimensions, Dimensions2df(20, 20))
-
-  val (mapZombie) = {
-    val zombie = new Zombie()
-    (MapStorable(new Position2df(10.0f, 10.0f), zombie.getDimensions, zombie))
-  }
-  map.insert(mapZombie)
-
-  val (mapPlayer) = {
-    val player = new Player()
-    (MapStorable(new Position2df(20.0f, 20.0f), player.getDimensions, player))
-  }
-  map.insert(mapPlayer)
-
-  val zombies: mutable.MutableList[Zombie] = mutable.MutableList[Zombie]()
-  zombies += mapZombie.item
 
   def addZombie(zombie: MapStorable[Zombie]): Unit = {
     if (map.inBounds(zombie)) {
@@ -47,26 +36,8 @@ class GameObjects(val dimensions: Dimensions2df) {
     }
   }
 
-  def movePlayer(vector: Vector2df): Unit = {
-
-    val playerLoc = map.getEntityUnsafe(mapPlayer.item)
-    val collidableZombieLoc = map.getEntityUnsafe(mapZombie.item)
-
-    val newPlayerPos = playerLoc.position.incX(vector.x).incY(vector.y)
-    val playerRect = new Rectangle(newPlayerPos.x, newPlayerPos.y, playerLoc.dimensions.width, playerLoc.dimensions.height)
-    val zombieRect =
-      new Rectangle(
-        collidableZombieLoc.position.x,
-        collidableZombieLoc.position.y,
-        collidableZombieLoc.dimensions.width,
-        collidableZombieLoc.dimensions.height
-      )
-
-    if (!playerRect.overlaps(zombieRect) && map.inBounds(playerLoc.copy(position = newPlayerPos))) {
-      val newPlayerLoc = playerLoc.copy(position = playerLoc.position.add(vector))
-      map.move(mapPlayer.item, newPlayerLoc)
-    } else
-      System.out.println("Blocked")
+  def getZombies: mutable.MutableList[MapStorable[Zombie]] = {
+    zombies.map(map.getEntityUnsafe)
   }
 
   def moveZombies(deltaSeconds: Float): Unit = {
@@ -83,5 +54,28 @@ class GameObjects(val dimensions: Dimensions2df) {
     }
   }
 
-  def getPlayerPosition: Position2df = map.getEntityUnsafe(mapPlayer.item).position
+  def getPlayerPosition: Position2df = map.getEntityUnsafe(player).position
+
+  def getPlayerDimensions = player.getDimensions
+
+  def movePlayer(vector: Vector2df): Unit = {
+    val playerLoc = map.getEntityUnsafe(player)
+    val collidableZombieLoc = map.getEntityUnsafe(zombie)
+
+    val newPlayerPos = playerLoc.position.incX(vector.x).incY(vector.y)
+    val playerRect = new Rectangle(newPlayerPos.x, newPlayerPos.y, playerLoc.dimensions.width, playerLoc.dimensions.height)
+    val zombieRect =
+      new Rectangle(
+        collidableZombieLoc.position.x,
+        collidableZombieLoc.position.y,
+        collidableZombieLoc.dimensions.width,
+        collidableZombieLoc.dimensions.height
+      )
+
+    if (!playerRect.overlaps(zombieRect) && map.inBounds(playerLoc.copy(position = newPlayerPos))) {
+      val newPlayerLoc = playerLoc.copy(position = playerLoc.position.add(vector))
+      map.move(player, newPlayerLoc)
+    } else
+      System.out.println("Blocked")
+  }
 }
