@@ -136,6 +136,9 @@ class Map2d[A](
   }
 
   def getNodes(xStart: Float, yStart: Float, width: Float, height: Float): Set[MapStorable[A]] = {
+    val adjustedXStart = if (xStart >= 0) xStart else 0
+    val adjustedYStart = if (yStart >= 0) yStart else 0
+
     val xLimit = Math.min(
       ((xStart + width) / nodeDimensions.width).toInt,
       nodes.length - 1
@@ -147,8 +150,8 @@ class Map2d[A](
     )
 
     val x2: immutable.Seq[Set[MapStorable[A]]] = for {
-      x <- (xStart / nodeDimensions.width).toInt to xLimit
-      y <- (yStart / nodeDimensions.height).toInt to yLimit
+      x <- (adjustedXStart / nodeDimensions.width).toInt to xLimit
+      y <- (adjustedYStart / nodeDimensions.height).toInt to yLimit
     } yield {
       val x1: Set[MapStorable[A]] = nodes(x)(y)
       if (x1 == null) Set.empty[MapStorable[A]] else x1

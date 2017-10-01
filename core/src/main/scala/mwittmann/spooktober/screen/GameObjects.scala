@@ -10,7 +10,11 @@ import mwittmann.spooktober.util.{Map2d, MapStorable}
 
 class GameObjects(val dimensions: Dimensions2df) {
   def get(view: View): Set[MapStorable[Entity]] = {
-    map.getNodes(view.gameX, view.gameY, view.gameWidth, view.gameHeight)
+    map.getNodes(
+      view.gameX - view.gameWidth / 2,
+      view.gameY - view.gameHeight / 2,
+      view.gameWidth,
+      view.gameHeight)
   }
 
   def getZombies(): mutable.MutableList[MapStorable[Zombie]] = {
