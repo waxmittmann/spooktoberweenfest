@@ -9,6 +9,10 @@ import mwittmann.spooktober.unit.Vector2df
 import mwittmann.spooktober.util.{Map2d, MapStorable}
 
 class GameObjects(val dimensions: Dimensions2df) {
+  def get(view: View): Set[MapStorable[Entity]] = {
+    map.getNodes(view.gameX, view.gameY, view.gameWidth, view.gameHeight)
+  }
+
   def getZombies(): mutable.MutableList[MapStorable[Zombie]] = {
     zombies.map(map.getEntityUnsafe)
   }

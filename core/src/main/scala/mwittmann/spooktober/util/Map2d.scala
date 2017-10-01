@@ -130,25 +130,6 @@ class Map2d[A](
     })
   }
 
-//  def remove(storable: MapStorable[A]): Unit = {
-//    val (startNodeX, startNodeY) = (
-//      Math.floor(storable.position.x / nodeDimensions.width).toInt,
-//      Math.floor(storable.position.y / nodeDimensions.height).toInt
-//    )
-//
-//    val (endNodeX, endNodeY) = (
-//      Math.ceil((storable.position.x + storable.dimensions.width) / nodeDimensions.width).toInt,
-//      Math.ceil((storable.position.y + storable.dimensions.height) / nodeDimensions.height).toInt
-//    )
-//
-//    for {
-//      xAt <- startNodeX to endNodeX
-//      yAt <- startNodeY to endNodeY
-//    } yield {
-//      nodes(xAt)(yAt) -= storable
-//    }
-//  }
-
   def getNode(x: Float, y: Float): Set[MapStorable[A]] = {
     printlnd(s"Get $x, $y returns ${(x / nodeDimensions.width).toInt}, ${(y / nodeDimensions.height).toInt}")
     nodes((x / nodeDimensions.width).toInt)((y / nodeDimensions.height).toInt)
@@ -157,27 +138,26 @@ class Map2d[A](
   def getNodes(xStart: Float, yStart: Float, width: Float, height: Float): Set[MapStorable[A]] = {
     val xLimit = Math.min(
       ((xStart + width) / nodeDimensions.width).toInt,
-      nodes.length
+      nodes.length - 1
     )
 
     val yLimit = Math.min(
       ((yStart + height) / nodeDimensions.height).toInt,
-      nodes(0).length
+      nodes(0).length - 1
     )
 
     val x2: immutable.Seq[Set[MapStorable[A]]] = for {
       x <- (xStart / nodeDimensions.width).toInt to xLimit
       y <- (yStart / nodeDimensions.height).toInt to yLimit
     } yield {
-      val x1: Set[MapStorable[A]] =  nodes(x)(y)
-      x1
+      val x1: Set[MapStorable[A]] = nodes(x)(y)
+      if (x1 == null) Set.empty[MapStorable[A]] else x1
     }
 
     val x3: Set[Set[MapStorable[A]]] = x2.toSet
 
     val x4: Set[MapStorable[A]] = x3.flatten
 
-      //.toSet.flatten
     x4
   }
 

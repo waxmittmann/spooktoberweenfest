@@ -1,12 +1,8 @@
 package mwittmann.spooktober.screen
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.g2d.{SpriteBatch, TextureRegion}
-import mwittmann.spooktober.screen.View
-import mwittmann.spooktober.asset.Animation
-import mwittmann.spooktober.asset.me.mwittmann.hellogdx.asset.Assets
-import mwittmann.spooktober.entity.{Player, Zombie}
-import mwittmann.spooktober.unit.Position2df
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import mwittmann.spooktober.entity.Entity
 import mwittmann.spooktober.util.{DebugDraw, MapStorable}
 
 
@@ -19,36 +15,24 @@ class GameObjectsRenderer {
     batch.begin()
     batch.setProjectionMatrix(batch.getProjectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth, Gdx.graphics.getHeight))
 
-    for (zombie <- gameObjects.getZombies()) {
-      renderZombie(zombie, view)
+    val objectsToRender = gameObjects.get(view)
+    for (renderable <- objectsToRender) {
+      render(view, renderable)
     }
 
-    renderPlayer(gameObjects.mapPlayer.item, gameObjects.getPlayerPosition, view)
     batch.end()
   }
 
-  def renderZombie(zombie: MapStorable[Zombie], view: View): Unit = {
-    var animation: Animation = null
+  def render(view: View, renderable: MapStorable[Entity]) = {
+    val texture = renderable.item.texture
 
-    if (zombie.item.`type` == 0) animation = Assets.zombieA
-    else animation = Assets.zombieB
+    val x = view.translateX(renderable.position.x)
+    val y = view.translateY(renderable.position.y)
 
-    val x = view.translateX(zombie.position.x)
-    val y = view.translateY(zombie.position.y)
-    val width = view.translateWidth(zombie.dimensions.width)
-    val height = view.translateHeight(zombie.dimensions.height)
-    val frame = animation.getKeyFrame(zombie.item.stateTime, Animation.ANIMATION_LOOPING)
-    batch.draw(frame, x, y, width, height)
-  }
-
-  def renderPlayer(player: Player, position: Position2df, view: View): Unit = {
-    val playerTexture = Assets.player
-    val x = view.translateX(position.x)
-    val y = view.translateY(position.y)
     // Todo: fix
-    val width = view.translateWidth(player.getDimensions.width)
-    val height = view.translateHeight(player.getDimensions.height)
-    batch.draw(playerTexture, x, y, width, height)
+    val width = view.translateWidth(renderable.dimensions.width)
+    val height = view.translateHeight(renderable.dimensions.height)
+    batch.draw(texture, x, y, width, height)
   }
 
   def dispose(): Unit = {

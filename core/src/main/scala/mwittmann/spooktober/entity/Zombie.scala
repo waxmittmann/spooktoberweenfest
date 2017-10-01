@@ -1,5 +1,7 @@
 package mwittmann.spooktober.entity
 
+import mwittmann.spooktober.asset.Animation
+import mwittmann.spooktober.asset.me.mwittmann.hellogdx.asset.Assets
 import mwittmann.spooktober.unit.{Dimensions2df, Position2df, Vector2df}
 import mwittmann.spooktober.util.GlobalRandom
 
@@ -10,16 +12,6 @@ class Zombie extends Entity {
 
   val `type`: Int = GlobalRandom.random.nextInt(2)
   val dimensions = new Dimensions2df(10.0f, 10.0f)
-
-//  def movePosition(vector: Vector2df): Unit = {
-//    position = position.incX(vector.x).incY(vector.y)
-//  }
-//
-//  def getPosition: Position2df = position
-//
-//  def setPosition(position: Position2df): Unit = {
-//    this.position = position
-//  }
 
   def getDimensions: Dimensions2df = dimensions
 
@@ -36,5 +28,13 @@ class Zombie extends Entity {
     }
     movedCurrentDirection += deltaSeconds
     new Vector2df(currentDirection.x * deltaSeconds, currentDirection.y * deltaSeconds)
+  }
+
+  override def texture = {
+    val animation =
+      if (`type` == 0) Assets.zombieA
+      else Assets.zombieB
+
+    animation.getKeyFrame(stateTime, Animation.ANIMATION_LOOPING)
   }
 }
