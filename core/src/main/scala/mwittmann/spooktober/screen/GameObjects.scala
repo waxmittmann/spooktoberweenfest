@@ -60,22 +60,13 @@ class GameObjects(val dimensions: Dimensions2df) {
 
   def movePlayer(vector: Vector2df): Unit = {
     val playerLoc = map.getEntityUnsafe(player)
-    val collidableZombieLoc = map.getEntityUnsafe(zombie)
-
     val newPlayerPos = playerLoc.position.incX(vector.x).incY(vector.y)
-    val playerRect = new Rectangle(newPlayerPos.x, newPlayerPos.y, playerLoc.dimensions.width, playerLoc.dimensions.height)
-    val zombieRect =
-      new Rectangle(
-        collidableZombieLoc.position.x,
-        collidableZombieLoc.position.y,
-        collidableZombieLoc.dimensions.width,
-        collidableZombieLoc.dimensions.height
-      )
+    val newPlayerLoc = playerLoc.copy(position = newPlayerPos)
 
-    if (!playerRect.overlaps(zombieRect) && map.inBounds(playerLoc.copy(position = newPlayerPos))) {
-      val newPlayerLoc = playerLoc.copy(position = playerLoc.position.add(vector))
+    if (map.checkCollision(newPlayerLoc).size == 0) {
       map.move(player, newPlayerLoc)
-    } else
+    } else {
       System.out.println("Blocked")
+    }
   }
 }

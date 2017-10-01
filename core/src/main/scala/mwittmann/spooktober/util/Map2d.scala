@@ -1,15 +1,26 @@
 package mwittmann.spooktober.util
 
+import com.badlogic.gdx.math.Rectangle
 import mwittmann.spooktober.unit.{Dimensions2df, Position2df}
 
 import scala.collection.{immutable, mutable}
 
-case class MapStorable[+S](position: Position2df, dimensions: Dimensions2df, item: S)
+case class MapStorable[+S](position: Position2df, dimensions: Dimensions2df, item: S) {
+  lazy val asRectangle = new Rectangle(
+    position.x, position.y,
+    dimensions.width, dimensions.height
+  )
+}
 
 class Map2d[A](
   mapDimensions: Dimensions2df,
   nodeDimensions: Dimensions2df
 ) {
+
+  def checkCollision(storable: MapStorable[A]): Set[MapStorable[A]] = {
+    getNodes(storable)
+  }
+
   def inBounds(newZombiePos: Position2df, dimensions: Dimensions2df): Boolean = {
     newZombiePos.x >= 0 &&
       newZombiePos.y >= 0 &&
@@ -121,6 +132,12 @@ class Map2d[A](
 
   def getNode(x: Float, y: Float): Set[MapStorable[A]] = {
     nodes((x / nodeDimensions.width).toInt)((y / nodeDimensions.height).toInt)
+  }
+
+  def getNodes(storable: MapStorable[A]): Set[MapStorable[A]] = {
+    val rect = storable.asRectangle
+    getNodes(storable.position.x, storable.position.y, storable.dimensions.width, storable.dimensions.height)
+      .filter(other => other.item != storable.item && other.asRectangle.overlaps(rect))
   }
 
   def getNodes(xStart: Float, yStart: Float, width: Float, height: Float): Set[MapStorable[A]] = {
