@@ -20,21 +20,7 @@ class GameScreen() extends ScreenAdapter {
   val gameObjectsRenderer = new GameObjectsRenderer
   val debug = new DebugDraw
 
-  // Todo: Does this do any good?
-  //val waitFor: Float = 0.025f
-  val waitFor: Float = 0
-  private[screen] var sinceLast: Float = 0
-
-  override def render(deltaSeconds: Float): Unit = {
-    sinceLast += deltaSeconds
-
-    if (sinceLast >= waitFor) {
-      reallyRender(sinceLast)
-      sinceLast = 0
-    }
-  }
-
-  def reallyRender(delta: Float): Unit = {
+  override def render(delta: Float): Unit = {
     gameState = GameInput.movePlayer(delta, gameObjects, gameState)
 
     gameObjects.moveZombies(delta)

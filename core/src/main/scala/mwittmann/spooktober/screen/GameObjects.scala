@@ -36,11 +36,8 @@ class GameObjects(val dimensions: Dimensions2df) {
     }
   }
 
-  def getZombies: mutable.MutableList[MapStorable[Zombie]] = {
-    zombies.map(map.getEntityUnsafe)
-  }
-
   def moveZombies(deltaSeconds: Float): Unit = {
+
     for (zombie <- zombies) {
       val move = zombie.getMove(deltaSeconds)
       val mapZombie = map.getEntityUnsafe(zombie)
