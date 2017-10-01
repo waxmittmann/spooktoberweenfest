@@ -17,13 +17,17 @@ class Map2d[A](
   mapDimensions: Dimensions2df,
   nodeDimensions: Dimensions2df
 ) {
+  def inBounds(newZombiePos: Position2df, dimensions: Dimensions2df): Boolean = {
+    (newZombiePos.x >= 0 &&
+      newZombiePos.y >= 0 &&
+      (newZombiePos.x + dimensions.width) < mapDimensions.width &&
+      (newZombiePos.y + dimensions.height) < mapDimensions.height)
+  }
+
 
   // Todo: 0 should be ok (right now inserts at -1 and breaks)
   def inBounds(mapStorable: MapStorable[A]): Boolean = {
-    (mapStorable.position.x > 0 &&
-      mapStorable.position.y > 0 &&
-      mapStorable.position.x + mapStorable.dimensions.width < mapDimensions.width &&
-      mapStorable.position.y + mapStorable.dimensions.height < mapDimensions.height)
+    inBounds(mapStorable.position, mapStorable.dimensions)
   }
 
   def move(entity: A, newLoc: MapStorable[A]): Unit = {
@@ -43,8 +47,8 @@ class Map2d[A](
     itemToMapStorable.get(player)
   }
 
-  def getEntityUnsafe(player: A): MapStorable[A] = {
-    itemToMapStorable(player)
+  def getEntityUnsafe[S <: A](item: S): MapStorable[S] = {
+    itemToMapStorable(item).asInstanceOf[MapStorable[S]] // I guess this is safe, but :(
   }
 
   assert(mapDimensions.width > 0)
@@ -78,6 +82,14 @@ class Map2d[A](
       Math.floor((storable.position.x + storable.dimensions.width) / nodeDimensions.width).toInt,
       Math.floor((storable.position.y + storable.dimensions.height) / nodeDimensions.height).toInt
     )
+
+    if (startNodeX < 0 || startNodeY < 0 || endNodeX >= horizontalNodeNr || endNodeY >= verticalNodeNr) {
+      val msg =
+        s"""Can't add, outside node range $startNodeX, $startNodeY, $endNodeX, $endNodeY
+           |Storable: ${storable}
+         """.stripMargin
+      throw new Exception(msg)
+    }
 
     val nodesPartOf: immutable.Seq[NodeIndex] =
       for {

@@ -19,7 +19,7 @@ class GameObjectsRenderer {
     batch.begin()
     batch.setProjectionMatrix(batch.getProjectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth, Gdx.graphics.getHeight))
 
-    for (zombie <- gameObjects.zombies) {
+    for (zombie <- gameObjects.getZombies()) {
       renderZombie(zombie, view)
     }
 

@@ -9,6 +9,10 @@ import mwittmann.spooktober.unit.Vector2df
 import mwittmann.spooktober.util.{Map2d, MapStorable}
 
 class GameObjects(val dimensions: Dimensions2df) {
+  def getZombies(): mutable.MutableList[MapStorable[Zombie]] = {
+    zombies.map(map.getEntityUnsafe)
+  }
+
   assert(dimensions != null)
 
   val map = new Map2d[Entity](dimensions, Dimensions2df(20, 20))
@@ -25,13 +29,13 @@ class GameObjects(val dimensions: Dimensions2df) {
   }
   map.insert(mapPlayer)
 
-  val zombies: mutable.MutableList[MapStorable[Zombie]] = mutable.MutableList[MapStorable[Zombie]]()
-  zombies += mapZombie
+  val zombies: mutable.MutableList[Zombie] = mutable.MutableList[Zombie]()
+  zombies += mapZombie.item
 
   def addZombie(zombie: MapStorable[Zombie]): Unit = {
     if (map.inBounds(zombie)) {
       map.insert(zombie)
-      zombies += zombie
+      zombies += zombie.item
     }
   }
 
@@ -50,7 +54,6 @@ class GameObjects(val dimensions: Dimensions2df) {
         collidableZombieLoc.dimensions.height
       )
 
-
     if (!playerRect.overlaps(zombieRect) && map.inBounds(playerLoc.copy(position = newPlayerPos))) {
       val newPlayerLoc = playerLoc.copy(position = playerLoc.position.add(vector))
       map.move(mapPlayer.item, newPlayerLoc)
@@ -58,20 +61,17 @@ class GameObjects(val dimensions: Dimensions2df) {
       System.out.println("Blocked")
   }
 
-  // Todo
   def moveZombies(deltaSeconds: Float): Unit = {
     for (zombie <- zombies) {
-      val mv = zombie.item.getMove(deltaSeconds)
+      val mv = zombie.getMove(deltaSeconds)
 
-      val newZombiePos = zombie.position.add(mv)
+      val mapZombie = map.getEntityUnsafe(zombie)
 
-      map.move(zombie.item, newZombiePos)
+      val newZombiePos = mapZombie.position.add(mv)
 
-//      if (zombie.getPosition.x < 0) zombie.setPosition(zombie.getPosition.withX(0))
-//      else if (zombie.getPosition.x > dimensions.width) zombie.setPosition(zombie.getPosition.withX(dimensions.width))
-//
-//      if (zombie.getPosition.y < 0) zombie.setPosition(zombie.getPosition.withY(0))
-//      else if (zombie.getPosition.y > dimensions.height) zombie.setPosition(zombie.getPosition.withY(dimensions.height))
+      if (map.inBounds(newZombiePos, mapZombie.dimensions)) {
+        map.move(zombie, newZombiePos)
+      }
     }
   }
 

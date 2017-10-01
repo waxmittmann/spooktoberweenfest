@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.GL20
 import mwittmann.spooktober.asset.me.mwittmann.hellogdx.asset.Assets
 import mwittmann.spooktober.entity.Zombie
 import mwittmann.spooktober.unit.{Dimensions2df, Position2df, Vector2df}
-import mwittmann.spooktober.util.{DebugDraw, GlobalRandom}
+import mwittmann.spooktober.util.{DebugDraw, DebugLog, GlobalRandom}
 
 class GameScreen() extends ScreenAdapter {
 

@@ -17,6 +17,7 @@ object Settings {
     libraryDependencies ++= Seq(
       "com.badlogicgames.gdx" % "gdx" % libgdxVersion.value,
       "org.specs2" %% "specs2-core" % "3.9.5" % "test",
+      "org.specs2" %% "specs2-scalacheck" % "3.9.5" % "test",
       "org.typelevel" %% "cats-core" % "1.0.0-MF"
     ),
     javacOptions ++= Seq(
