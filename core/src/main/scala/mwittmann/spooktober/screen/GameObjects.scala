@@ -6,7 +6,7 @@ import mwittmann.spooktober.entity.{Entity, Player, Zombie}
 import mwittmann.spooktober.unit.Dimensions2df
 import mwittmann.spooktober.unit.Position2df
 import mwittmann.spooktober.unit.Vector2df
-import mwittmann.spooktober.util.{Map2d, MapStorable}
+import mwittmann.spooktober.util.{DebugLog, Map2d, MapStorable}
 
 class GameObjects(val dimensions: Dimensions2df) {
   val map = new Map2d[Entity](dimensions, Dimensions2df(20, 20))
@@ -42,13 +42,16 @@ class GameObjects(val dimensions: Dimensions2df) {
 
   def moveZombies(deltaSeconds: Float): Unit = {
     for (zombie <- zombies) {
-      val mv = zombie.getMove(deltaSeconds)
-
+      val move = zombie.getMove(deltaSeconds)
       val mapZombie = map.getEntityUnsafe(zombie)
+      val newZombiePos = mapZombie.position.add(move)
 
-      val newZombiePos = mapZombie.position.add(mv)
+      val newMapZombie = mapZombie.copy(position = newZombiePos)
 
-      if (map.inBounds(newZombiePos, mapZombie.dimensions)) {
+      if (
+        map.inBounds(newZombiePos, mapZombie.dimensions) &&
+          map.checkCollision(newMapZombie).isEmpty
+      ) {
         map.move(zombie, newZombiePos)
       }
     }
@@ -63,10 +66,10 @@ class GameObjects(val dimensions: Dimensions2df) {
     val newPlayerPos = playerLoc.position.incX(vector.x).incY(vector.y)
     val newPlayerLoc = playerLoc.copy(position = newPlayerPos)
 
-    if (map.checkCollision(newPlayerLoc).size == 0) {
+    if (map.inBounds(newPlayerLoc) && map.checkCollision(newPlayerLoc).isEmpty) {
       map.move(player, newPlayerLoc)
     } else {
-      System.out.println("Blocked")
+      DebugLog.dprintln("Blocked")
     }
   }
 }
