@@ -38,12 +38,16 @@ class GameScreen() extends ScreenAdapter {
     val gameHeight = screenHeight * gameState.gameFactor
     // Todo: Probably don't offset this (see View)
     val view = new View(
-      gameObjects.getPlayerPosition.x + gameObjects.getPlayerDimensions.width / 2,
-      gameObjects.getPlayerPosition.y + gameObjects.getPlayerDimensions.height / 2,
+      gameObjects.getPlayerPosition.x
+        + gameObjects.getPlayerDimensions.width / 2
+        - gameWidth / 2,
+      gameObjects.getPlayerPosition.y
+        + gameObjects.getPlayerDimensions.height / 2
+        - gameHeight / 2,
       gameWidth,
       gameHeight,
-      screenWidth / 2,
-      screenHeight / 2,
+      0,
+      0,
       screenWidth,
       screenHeight
     )

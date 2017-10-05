@@ -21,13 +21,7 @@ class GameObjects(val dimensions: Dimensions2df) {
   val player = new Player()
   map.insert(MapStorable(Position2df(20.0f, 20.0f), player.getDimensions, player))
 
-  def getEntities(view: View): Set[MapStorable[Entity]] = {
-    map.getNodes(
-      view.gameX - view.gameWidth / 2,
-      view.gameY - view.gameHeight / 2,
-      view.gameWidth,
-      view.gameHeight)
-  }
+  def getEntities(view: View): Set[MapStorable[Entity]] = map.getNodes(view)
 
   def addZombie(zombie: MapStorable[Zombie]): Unit = {
     if (map.inBounds(zombie) && map.checkCollision(zombie).isEmpty
