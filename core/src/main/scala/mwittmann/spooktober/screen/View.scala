@@ -1,5 +1,11 @@
 package mwittmann.spooktober.screen
 
+import mwittmann.spooktober.unit.{Dimensions2df, Position2df}
+
+object View {
+  val emptyView = new View(0, 0, 0, 0, 0, 0, 0, 0)
+}
+
 // Todo: At the moment, 'gameX, gameY' are the center of the screen, with the screen going from -(screenWidth/2, ..)
 // to +(screenWidth/2, ...); might be nicer to set it to have gameX, gameY be lower right
 class View(
@@ -12,6 +18,9 @@ class View(
   val screenWidth: Float,
   val screenHeight: Float
 ) {
+  def viewPositionGame: Position2df = Position2df(gameX, gameY)
+  def viewDimensionsGame: Dimensions2df = Dimensions2df(gameWidth, gameHeight)
+
   val xFactor: Float  = screenWidth / gameWidth
   val yFactor: Float = screenHeight / gameHeight
 

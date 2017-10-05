@@ -15,18 +15,23 @@ class GameScreen() extends ScreenAdapter {
 
   Assets.load()
 
-  var gameState = GameState()
+  var gameState = GameState(view = View.emptyView)
   val gameObjects = new GameObjects(gameState.gameDimensions)
   val gameObjectsRenderer = new GameObjectsRenderer
-  val debug = new DebugDraw
 
   override def render(delta: Float): Unit = {
-    gameState = GameInput.movePlayer(delta, gameObjects, gameState)
-
-    gameObjects.moveZombies(delta)
-    super.render(delta)
+    //super.render(delta)
     Gdx.gl.glClearColor(0, 0, 0, 1)
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+
+    gameState = gameState.copy(view = calculateView)
+    gameState = GameInput.handle(delta, gameObjects, gameState)
+    gameObjects.moveZombies(calculateView, delta)
+
+    gameObjectsRenderer.render(gameObjects, calculateView)
+  }
+
+  private def calculateView = {
     val screenWidth = Gdx.graphics.getWidth
     val screenHeight = Gdx.graphics.getHeight
     val gameWidth = screenWidth * gameState.gameFactor
@@ -42,8 +47,7 @@ class GameScreen() extends ScreenAdapter {
       screenWidth,
       screenHeight
     )
-    gameObjectsRenderer.render(gameObjects, view)
-    debug.tick(delta, gameObjects)
+    view
   }
 
   override def dispose(): Unit = {

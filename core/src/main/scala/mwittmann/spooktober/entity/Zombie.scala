@@ -15,19 +15,26 @@ class Zombie extends Entity {
 
   def getDimensions: Dimensions2df = dimensions
 
-  private var currentDirection = new Vector2df(GlobalRandom.random.nextInt(10) - 5f, GlobalRandom.random.nextInt(10) - 5f)
+
+  def randomMove =
+    Vector2df(
+      (GlobalRandom.random.nextInt(5) + 5f) * (if (GlobalRandom.random.nextBoolean()) { -1 } else 1),
+      (GlobalRandom.random.nextInt(5) + 5f) * (if (GlobalRandom.random.nextBoolean()) { -1 } else 1)
+    )
+
+  private var currentDirection = randomMove
   private[entity] var movedCurrentDirection = 0.0f
 
   def getMove(deltaSeconds: Float): Vector2df = {
     stateTime += deltaSeconds
     // If we've moved in the same direction for > 1 sec, consider changing direction
     if (movedCurrentDirection >= 1.0) { // 30% chance of direction change
-      if (GlobalRandom.random.nextInt(10) > 7) currentDirection = new Vector2df(GlobalRandom.random.nextInt(10) - 5f, GlobalRandom.random.nextInt(10) - 5f)
+      if (GlobalRandom.random.nextInt(10) > 7) currentDirection = randomMove
       // Else keep going, redecide in half a second
       movedCurrentDirection = 0.5f
     }
     movedCurrentDirection += deltaSeconds
-    new Vector2df(currentDirection.x * deltaSeconds, currentDirection.y * deltaSeconds)
+    Vector2df(currentDirection.x * deltaSeconds, currentDirection.y * deltaSeconds)
   }
 
   override def texture = {

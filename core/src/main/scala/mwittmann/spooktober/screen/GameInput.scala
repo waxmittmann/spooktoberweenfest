@@ -6,7 +6,8 @@ import mwittmann.spooktober.unit.{Dimensions2df, Position2df, Vector2df}
 import mwittmann.spooktober.util.{GlobalRandom, MapStorable}
 
 object GameInput {
-  def movePlayer(
+  // Mutates gameObjects, which maybe isn't so nice; perhaps we should return a mutating object here
+  def handle(
     delta: Float,
     gameObjects: GameObjects,
     gameState: GameState
@@ -15,13 +16,13 @@ object GameInput {
 
     var newGameFactor = gameFactor
 
-    if (Gdx.input.isKeyPressed(Input.Keys.W)) gameObjects.movePlayer(Vector2df(0f, playerSpeed * delta * factor))
+    if (Gdx.input.isKeyPressed(Input.Keys.W)) gameObjects.movePlayer(gameState.view, Vector2df(0f, playerSpeed * delta * factor))
 
-    if (Gdx.input.isKeyPressed(Input.Keys.A)) gameObjects.movePlayer(Vector2df(-playerSpeed * delta * factor, 0f))
+    if (Gdx.input.isKeyPressed(Input.Keys.A)) gameObjects.movePlayer(gameState.view, Vector2df(-playerSpeed * delta * factor, 0f))
 
-    if (Gdx.input.isKeyPressed(Input.Keys.D)) gameObjects.movePlayer(Vector2df(playerSpeed * delta * factor, 0f))
+    if (Gdx.input.isKeyPressed(Input.Keys.D)) gameObjects.movePlayer(gameState.view, Vector2df(playerSpeed * delta * factor, 0f))
 
-    if (Gdx.input.isKeyPressed(Input.Keys.S)) gameObjects.movePlayer(Vector2df(0f, -playerSpeed * delta * factor))
+    if (Gdx.input.isKeyPressed(Input.Keys.S)) gameObjects.movePlayer(gameState.view, Vector2df(0f, -playerSpeed * delta * factor))
 
     if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
       for { _ <- 0 to 200 } yield {

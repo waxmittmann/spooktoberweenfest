@@ -30,26 +30,37 @@ class GameObjects(val dimensions: Dimensions2df) {
   }
 
   def addZombie(zombie: MapStorable[Zombie]): Unit = {
-    if (map.inBounds(zombie)) {
+    if (map.inBounds(zombie) && map.checkCollision(zombie).isEmpty
+    ) {
       map.insert(zombie)
       zombies += zombie.item
     }
   }
 
-  def moveZombies(deltaSeconds: Float): Unit = {
+  def moveZombies(view: View, deltaSeconds: Float): Unit = {
+    // Todo: Figure out how to get only what I want out
+    val inView = map.getNodes(view)
+    println(s"Figuring out zombies, ${inView.size} in view")
+    for (storable <- inView) {
+      storable.item match {
+        case zombie: Zombie => {
+          println(s"Moving $zombie")
+          //for (zombie <- zombies) {
+          val move = zombie.getMove(deltaSeconds)
+          //val mapZombie = map.getEntityUnsafe(zombie)
+          val newZombiePos = storable.position.add(move)
 
-    for (zombie <- zombies) {
-      val move = zombie.getMove(deltaSeconds)
-      val mapZombie = map.getEntityUnsafe(zombie)
-      val newZombiePos = mapZombie.position.add(move)
+          val newMapZombie = storable.copy(position = newZombiePos)
 
-      val newMapZombie = mapZombie.copy(position = newZombiePos)
+          if (
+            map.inBounds(newZombiePos, zombie.dimensions) &&
+              map.checkCollision(newMapZombie).isEmpty
+          ) {
+            map.move(zombie, newZombiePos)
+          }
+        }
 
-      if (
-        map.inBounds(newZombiePos, mapZombie.dimensions) &&
-          map.checkCollision(newMapZombie).isEmpty
-      ) {
-        map.move(zombie, newZombiePos)
+        case _ => ()
       }
     }
   }
@@ -58,7 +69,7 @@ class GameObjects(val dimensions: Dimensions2df) {
 
   def getPlayerDimensions = player.getDimensions
 
-  def movePlayer(vector: Vector2df): Unit = {
+  def movePlayer(view: View, vector: Vector2df): Unit = {
     val playerLoc = map.getEntityUnsafe(player)
     val newPlayerPos = playerLoc.position.incX(vector.x).incY(vector.y)
     val newPlayerLoc = playerLoc.copy(position = newPlayerPos)

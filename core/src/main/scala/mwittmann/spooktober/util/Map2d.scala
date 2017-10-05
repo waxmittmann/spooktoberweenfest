@@ -1,11 +1,17 @@
 package mwittmann.spooktober.util
 
 import com.badlogic.gdx.math.Rectangle
+import mwittmann.spooktober.screen.View
 import mwittmann.spooktober.unit.{Dimensions2df, Position2df}
 
 import scala.collection.{immutable, mutable}
+import scala.reflect.ClassTag
 
-case class MapStorable[+S](position: Position2df, dimensions: Dimensions2df, item: S) {
+case class MapStorable[+S](
+  position: Position2df,
+  dimensions: Dimensions2df,
+  item: S
+)(implicit ev: ClassTag[S]) {
   lazy val asRectangle = new Rectangle(
     position.x, position.y,
     dimensions.width, dimensions.height
@@ -15,10 +21,49 @@ case class MapStorable[+S](position: Position2df, dimensions: Dimensions2df, ite
 class Map2d[A](
   mapDimensions: Dimensions2df,
   nodeDimensions: Dimensions2df
-) {
+)(implicit ct: ClassTag[A]) {
+  assert(mapDimensions.width > 0)
+  assert(mapDimensions.width >= nodeDimensions.width)
+  assert(mapDimensions.height > 0)
+  assert(mapDimensions.height >= nodeDimensions.height)
 
-  def checkCollision(storable: MapStorable[A]): Set[MapStorable[A]] = {
-    getNodes(storable)
+  val horizontalNodeNr = Math.ceil(mapDimensions.width / nodeDimensions.width).toInt
+  val verticalNodeNr = Math.ceil(mapDimensions.height / nodeDimensions.width).toInt
+
+  val nodes = Array.ofDim[Set[MapStorable[A]]](horizontalNodeNr, verticalNodeNr)
+
+  val itemToNodes: mutable.HashMap[A, Set[NodeIndex]] = new mutable.HashMap[A, Set[NodeIndex]]()
+  val itemToMapStorable: mutable.HashMap[A, MapStorable[A]] = new mutable.HashMap[A, MapStorable[A]]()
+
+  case class NodeIndex(x: Int, y: Int)
+
+//  def getNodes[S <: A](view: View)(implicit ev: ClassTag[S]): Set[MapStorable[S]] = {
+//    // Todo: Again, this is not nice and would be nicer if view weren't offset
+//    getNodes(view.gameX - view.gameWidth / 2, view.gameY - view.gameHeight / 2, view.gameWidth, view.gameHeight)
+//      .flatMap(storable => {
+//
+//        if (ev.equals(storable.item)) {
+//        //if (storable.item.isInstanceOf[S]) {
+//          Some(storable.asInstanceOf[MapStorable[S]])
+//        } else {
+//          None
+//        }
+//
+//        /*
+//        storable match {
+//          //case s @ MapStorable(_, _, _: S) : MapStorable[S] => {
+//          case s @ MapStorable(_, _, _: S) => {
+//          //case s: MapStorable[S] if ev.equals(s.item) => {
+//            println("Correct type " + s)
+//            Some(s)
+//          }
+//          case _ => None
+//        }*/
+//      })
+//  }
+
+  def checkCollision[S](storable: MapStorable[A])(implicit ev: ClassTag[S]): Set[MapStorable[A]] = {
+    getNodes(storable).filter(_.asRectangle.overlaps(storable.asRectangle))
   }
 
   def inBounds(newZombiePos: Position2df, dimensions: Dimensions2df): Boolean = {
@@ -38,11 +83,18 @@ class Map2d[A](
   }
 
   def move(entity: A, newLoc: Position2df): Unit = {
+    val itms = itemToMapStorable.size
+    val itn = itemToNodes.size
+
+
     itemToMapStorable.get(entity).map { mapStorable => {
       val newStorable = mapStorable.copy(newLoc)
       assert(remove(entity))
       insert(newStorable)
     }}.getOrElse(throw new Exception(s"Can't move $entity because it's not on the map!"))
+
+    assert(itms == itemToMapStorable.size)
+    assert(itn == itemToNodes.size)
   }
 
   def getEntity(player: A): Option[MapStorable[A]] = {
@@ -52,21 +104,6 @@ class Map2d[A](
   def getEntityUnsafe[S <: A](item: S): MapStorable[S] = {
     itemToMapStorable(item).asInstanceOf[MapStorable[S]] // I guess this is safe, but :(
   }
-
-  assert(mapDimensions.width > 0)
-  assert(mapDimensions.width >= nodeDimensions.width)
-  assert(mapDimensions.height > 0)
-  assert(mapDimensions.height  >= nodeDimensions.height)
-
-  val horizontalNodeNr = Math.ceil(mapDimensions.width / nodeDimensions.width).toInt
-  val verticalNodeNr = Math.ceil(mapDimensions.height / nodeDimensions.width).toInt
-
-  val nodes = Array.ofDim[Set[MapStorable[A]]](horizontalNodeNr, verticalNodeNr)
-
-  case class NodeIndex(x: Int, y: Int)
-
-  val itemToNodes: mutable.HashMap[A, Set[NodeIndex]] = new mutable.HashMap[A, Set[NodeIndex]]()
-  val itemToMapStorable: mutable.HashMap[A, MapStorable[A]] = new mutable.HashMap[A, MapStorable[A]]()
 
   def insert(storable: MapStorable[A]): Unit = {
     if (itemToNodes.contains(storable.item)) {
@@ -140,7 +177,16 @@ class Map2d[A](
       .filter(other => other.item != storable.item && other.asRectangle.overlaps(rect))
   }
 
-  def getNodes(xStart: Float, yStart: Float, width: Float, height: Float): Set[MapStorable[A]] = {
+  def getNodes(view: View): Set[MapStorable[A]] =
+    getNodes(view.viewPositionGame, view.viewDimensionsGame)
+
+  def getNodes(xStart: Float, yStart: Float, width: Float, height: Float): Set[MapStorable[A]] =
+    getNodes(new Position2df(xStart, yStart), new Dimensions2df(width, height))
+
+  def getNodes(position: Position2df, dimensions2df: Dimensions2df): Set[MapStorable[A]] = {
+    val (xStart, yStart) = (position.x, position.y)
+    val (width, height) = (dimensions2df.width, dimensions2df.height)
+
     val adjustedXStart = if (xStart >= 0) xStart else 0
     val adjustedYStart = if (yStart >= 0) yStart else 0
 
