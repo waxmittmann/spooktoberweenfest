@@ -34,24 +34,16 @@ class GameObjects(val dimensions: Dimensions2df) {
   def moveZombies(view: View, deltaSeconds: Float): Unit = {
     // Todo: Figure out how to get only what I want out
     val inView = map.getNodes(view)
-    println(s"Figuring out zombies, ${inView.size} in view")
     for (storable <- inView) {
       storable.item match {
         case zombie: Zombie => {
-          println(s"Moving $zombie")
-          //for (zombie <- zombies) {
           val move = zombie.getMove(deltaSeconds)
-          //val mapZombie = map.getEntityUnsafe(zombie)
           val newZombiePos = storable.position.add(move)
 
           val newMapZombie = storable.copy(position = newZombiePos)
 
-          if (
-            map.inBounds(newZombiePos, zombie.dimensions) &&
-              map.checkCollision(newMapZombie).isEmpty
-          ) {
+          if (map.inBounds(newZombiePos, zombie.dimensions) && map.checkCollision(newMapZombie).isEmpty)
             map.move(zombie, newZombiePos)
-          }
         }
 
         case _ => ()
