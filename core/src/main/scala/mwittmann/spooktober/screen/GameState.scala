@@ -7,5 +7,5 @@ case class GameState(
   factor: Float = 5.0f,
   playerSpeed: Float = 10,
   gameDimensions: Dimensions2df = new Dimensions2df(800, 800),
-  view: View
+  view: View = View.emptyView
 )

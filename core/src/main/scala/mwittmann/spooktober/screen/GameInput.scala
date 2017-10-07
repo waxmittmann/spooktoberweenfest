@@ -1,11 +1,43 @@
 package mwittmann.spooktober.screen
 
-import com.badlogic.gdx.{Gdx, Input}
+import com.badlogic.gdx.{Gdx, Input => GdxInput}
 import mwittmann.spooktober.entity.Zombie
 import mwittmann.spooktober.unit.{Dimensions2df, Position2df, Vector2df}
 import mwittmann.spooktober.util.{GlobalRandom, MapStorable}
+import mwittmann.spooktober.pipeline
+import mwittmann.spooktober.pipeline.{Down, Input, LowerLeft, LowerRight, Neutral, Up, UpperLeft, UpperRight}
 
 object GameInput {
+
+  def getInput: Input = {
+    val isW = Gdx.input.isKeyPressed(GdxInput.Keys.W)
+    val isA = Gdx.input.isKeyPressed(GdxInput.Keys.W)
+    val isD = Gdx.input.isKeyPressed(GdxInput.Keys.W)
+    val isS = Gdx.input.isKeyPressed(GdxInput.Keys.W)
+
+
+    val moveHoriz = if (isA && !isD) pipeline.Left else if (!isA && isD) pipeline.Right else pipeline.Neutral
+    val moveVert = if (isW && !isS) pipeline.Up else if (!isW && isS) pipeline.Down else pipeline.Neutral
+
+    val movement = (moveHoriz, moveVert) match {
+      case (Left, Down) => LowerLeft
+      case (Left, Neutral) => pipeline.Left
+      case (Left, Up) => UpperLeft
+
+      case (Neutral, Down) => Down
+      case (Neutral, Neutral) => Neutral
+      case (Neutral, Up) => Up
+
+      case (Right, Down) => LowerRight
+      case (Right, Neutral) => pipeline.Right
+      case (Right, Up) => UpperRight
+    }
+
+    Input(movement)
+  }
+
+  /*
+
   // Mutates gameObjects, which maybe isn't so nice; perhaps we should return a mutating object here
   def handle(
     delta: Float,
@@ -43,4 +75,5 @@ object GameInput {
 
     gameState.copy(gameFactor = newGameFactor)
   }
+  */
 }

@@ -77,9 +77,10 @@ class Map2d[A](
     inBounds(mapStorable.position, mapStorable.dimensions)
   }
 
-  def move(entity: A, newLoc: MapStorable[A]): Unit = {
+  def move(entity: A, newLoc: MapStorable[A]): Map2d[A] = {
     assert(remove(entity))
     insert(newLoc)
+    this
   }
 
   def move(entity: A, newLoc: Position2df): Unit = {
