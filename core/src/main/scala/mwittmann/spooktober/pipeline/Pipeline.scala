@@ -15,10 +15,10 @@ case object Down extends Direction
 
 
 object Input {
-  def NoInput = Input(Neutral)
+  def NoInput = Input(Neutral, false)
 }
 
-case class Input(movement: Direction)
+case class Input(movement: Direction, isAddZombies: Boolean)
 
 trait PipelineStage {
   val name: String

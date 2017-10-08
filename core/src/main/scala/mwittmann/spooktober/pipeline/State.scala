@@ -9,42 +9,42 @@ import scala.collection.mutable
 
 
 class ZombieState {
-
   val zombies = mutable.MutableList[Zombie]()
 
-  def add(map: Map2d[Entity]): Map2d[Entity] = {
+  def add(position2df: Position2df)(implicit map: Map2d[Entity]): Unit = {
     val zombie = new Zombie()
-    map.insert(MapStorable(Position2df(10.0f, 10.0f), zombie.getDimensions, zombie))
+    map.insertIfPossible(MapStorable(position2df, zombie.getDimensions, zombie))
     zombies += zombie
-    map
   }
 }
 
-class PlayerState(player: Player) { //}, map: Map2d[Entity]) {
+class PlayerState(player: Player) {
   def move(
-    newPlayerLoc: MapStorable[Player],
-    map: Map2d[Entity]
-  ): Map2d[Entity] = {
-    if (map.inBounds(newPlayerLoc) && map.checkCollision(newPlayerLoc).isEmpty) {
-      map.move(player, newPlayerLoc)
-    } else {
-      DebugLog.dprintln("Blocked")
-      map
-    }
+    newPlayerLoc: Position2df
+  )(implicit map: Map2d[Entity]): Boolean = {
+    println(s"Trying to move player to ${newPlayerLoc}")
+    map.moveIfPossible(player, newPlayerLoc)
   }
 
-  def getDimensions(map: Map2d[Entity]) =
+  def getPlayerStorable(implicit map: Map2d[Entity]): MapStorable[Entity] =
+    map.getEntity(player).getOrElse(throw new Exception("Player not on map!"))
+
+  def getDimensions(implicit map: Map2d[Entity]) =
     map.getEntity(player).get.dimensions
 
-  def getPosition(map: Map2d[Entity]): Position2df = {
+  def getPosition(implicit map: Map2d[Entity]): Position2df = {
     map.getEntity(player).get.position
   }
 }
 
 object PlayerState {
-  def apply(map: Map2d[Entity]): (PlayerState, Map2d[Entity]) = {
+  def apply(
+    map: Map2d[Entity],
+    initialPositon: Position2df
+  ): PlayerState = {
     val player = new Player()
-    (new PlayerState(player, map), map)
+    map.insert(player, initialPositon, player.getDimensions)
+    new PlayerState(player)
   }
 }
 
@@ -59,19 +59,21 @@ case class State(
   factor: Float = 5.0f,
   playerSpeed: Float = 10,
   gameDimensions: Dimensions2df,
-)
+) {
+  implicit val imap = map
+}
 
 object State {
   def apply(
     gameDimensions: Dimensions2df
   ): State = {
     val map = new Map2d[Entity](gameDimensions, Dimensions2df(20, 20))
-    val (playerState, mapWithPlayer) = PlayerState(map)
+    val playerState = PlayerState(map, Position2df(50, 50))
 
     State(
       player = playerState,
-      map = mapWithPlayer,
-      gameDimensions = gameDimensions
+      gameDimensions = gameDimensions,
+      map = map
     )
   }
 }

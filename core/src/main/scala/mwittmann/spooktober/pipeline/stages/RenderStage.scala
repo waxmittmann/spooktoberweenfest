@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import mwittmann.spooktober.entity.{Entity, Player, Zombie}
 import mwittmann.spooktober.pipeline.{PipelineStage, State}
-import mwittmann.spooktober.screen.{GameObjects, View}
+import mwittmann.spooktober.screen.View
 import mwittmann.spooktober.util.{DebugDraw, Map2d, MapStorable}
 
 class RenderStage extends PipelineStage {
@@ -41,7 +41,7 @@ class RenderStage extends PipelineStage {
     batch.draw(texture, x, y, width, height)
   }
 
-  def cleanup(): Unit = {
+  override def cleanup(): Unit = {
     batch.dispose()
   }
 }

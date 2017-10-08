@@ -24,34 +24,34 @@ object PlayerStage extends PipelineStage {
       case UpperRight => Vector2df(movementAmount, movementAmount)
     }
 
-    val newMap = movePlayer(player, map, view, moveVector)
-
-    state.copy(map = newMap)
+    movePlayer(state, moveVector)
+    state
+    //state.copy(map = newMap)
   }
 
   def movePlayer(
-    player: PlayerState,
-    map: Map2d[Entity],
-    view: View,
+    state: State,
     moveVector: Vector2df
-  ): Map2d[Entity] = {
-    val playerLoc = map.getEntityUnsafe(player)
-    val newPlayerPos = playerLoc.position.incX(moveVector.x).incY(moveVector.y)
-    val newPlayerLoc = playerLoc.copy(position = newPlayerPos)
+  ): Boolean = {
+    import state.imap
+
+//    val playerLoc = map.getEntityUnsafe(player)
+    val newPlayerPos = state.player.getPosition.incX(moveVector.x).incY(moveVector.y)
+//    val newPlayerLoc = playerLoc.copy(position = newPlayerPos)
 
     // Todo: Map!
-    if (playerState.isValidLoc(newPlayerLoc)) {
-      playerState.move(newPlayerLoc)
-    }
+//    if (playerState.isValidLoc(newPlayerLoc)) {
+//      playerState.move(newPlayerLoc)
+//    }
 
-    player.move(map, newPlayerLoc)
+    state.player.move(newPlayerPos)
 
 
-    if (map.inBounds(newPlayerLoc) && map.checkCollision(newPlayerLoc).isEmpty) {
-      map.move(player, newPlayerLoc)
-    } else {
-      DebugLog.dprintln("Blocked")
-    }
-    map
+//    if (map.inBounds(newPlayerLoc) && map.checkCollision(newPlayerLoc).isEmpty) {
+//      map.move(player, newPlayerLoc)
+//    } else {
+//      DebugLog.dprintln("Blocked")
+//    }
+//    map
   }
 }

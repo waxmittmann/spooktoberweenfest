@@ -41,6 +41,8 @@ class GameScreen() extends ScreenAdapter {
   }
 
   private def calculateView(state: State) = {
+    import state.imap
+
     val screenWidth = Gdx.graphics.getWidth
     val screenHeight = Gdx.graphics.getHeight
     val gameWidth = screenWidth * gameState.gameFactor

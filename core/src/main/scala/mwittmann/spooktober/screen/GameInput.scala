@@ -33,7 +33,7 @@ object GameInput {
       case (Right, Up) => UpperRight
     }
 
-    Input(movement)
+    Input(movement, Gdx.input.isKeyPressed(GdxInput.Keys.ENTER))
   }
 
   /*
