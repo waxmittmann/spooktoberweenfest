@@ -5,7 +5,6 @@ import mwittmann.spooktober.asset.me.mwittmann.hellogdx.asset.Assets
 import mwittmann.spooktober.unit.{Dimensions2df, Position2df, Vector2df}
 import mwittmann.spooktober.util.GlobalRandom
 
-// Todo: Inc state time
 class Zombie extends Entity {
   // Todo: Should store in renderer probably
   var stateTime: Float = GlobalRandom.random.nextFloat // So that all the anims aren't synced

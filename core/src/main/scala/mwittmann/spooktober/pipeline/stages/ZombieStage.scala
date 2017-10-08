@@ -1,7 +1,8 @@
 package mwittmann.spooktober.pipeline.stages
 
 import mwittmann.spooktober.entity.Zombie
-import mwittmann.spooktober.pipeline.{PipelineStage, State}
+import mwittmann.spooktober.pipeline.PipelineStage
+import mwittmann.spooktober.pipeline.state.{State, ZombieState}
 import mwittmann.spooktober.unit.Position2df
 import mwittmann.spooktober.util.GlobalRandom
 
@@ -37,15 +38,18 @@ object ZombieStage extends PipelineStage {
   }
 
 
-  def addZombies(state: State): Unit = {
+  def addZombies(state: State): State = {
     import state._
 
     if (state.input.isAddZombies) {
-      for { _ <- 0 to 200 } yield {
-        val x = GlobalRandom.random.nextInt(gameDimensions.width.toInt)
-        val y = GlobalRandom.random.nextInt(gameDimensions.height.toInt)
-        state.zombies.add(Position2df(x, y))
-      }
-    }
+      val newZombieState =
+        (0 to 100).foldLeft(state.zombies)((zombies, _) => {
+          val x = GlobalRandom.random.nextInt(gameDimensions.width.toInt)
+          val y = GlobalRandom.random.nextInt(gameDimensions.height.toInt)
+          zombies.add(Position2df(x, y))
+        })
+
+      state.copy(zombies = newZombieState)
+    } else state
   }
 }

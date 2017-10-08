@@ -42,11 +42,7 @@ object Assets {
     player = new TextureRegion(playerSheet, 0, 0, 200, 200)
   }
 
-  def loadTexture(file: String): Texture = {
-    val texture = new Texture(Gdx.files.internal(file))
-    println(texture.getWidth + ", " + texture.getHeight)
-    texture
-  }
+  def loadTexture(file: String): Texture = new Texture(Gdx.files.internal(file))
 
   def dispose(): Unit = zombieSheet.dispose()
 }

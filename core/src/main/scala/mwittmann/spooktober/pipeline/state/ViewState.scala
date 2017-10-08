@@ -1,14 +1,12 @@
-package mwittmann.spooktober.screen
+package mwittmann.spooktober.pipeline.state
 
 import mwittmann.spooktober.unit.{Dimensions2df, Position2df}
 
-object View {
-  val emptyView = new View(0, 0, 0, 0, 0, 0, 0, 0)
+object ViewState {
+  val emptyView = new ViewState(0, 0, 0, 0, 0, 0, 0, 0)
 }
 
-// Todo: At the moment, 'gameX, gameY' are the center of the screen, with the screen going from -(screenWidth/2, ..)
-// to +(screenWidth/2, ...); might be nicer to set it to have gameX, gameY be lower right
-class View(
+class ViewState(
   val gameX: Float,
   val gameY: Float,
   val gameWidth: Float,

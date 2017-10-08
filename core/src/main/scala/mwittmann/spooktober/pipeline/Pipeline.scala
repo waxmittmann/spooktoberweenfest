@@ -1,13 +1,7 @@
 package mwittmann.spooktober.pipeline
 
-import mwittmann.spooktober.pipeline.stages.{PlayerStage, RenderStage, ZombieStage}
-import mwittmann.spooktober.unit.Direction._
-
-object Input {
-  def NoInput = Input(Neutral, false)
-}
-
-case class Input(movement: Direction, isAddZombies: Boolean)
+import mwittmann.spooktober.pipeline.stages.{PlayerStage, RenderStage, UIStage, ZombieStage}
+import mwittmann.spooktober.pipeline.state.State
 
 trait PipelineStage {
   val name: String
@@ -30,6 +24,7 @@ class Pipeline(stages: Seq[PipelineStage]) {
 
 object Pipeline {
   def standardPipeline = new Pipeline(Seq(
+    UIStage,
     PlayerStage,
     ZombieStage,
     new RenderStage()

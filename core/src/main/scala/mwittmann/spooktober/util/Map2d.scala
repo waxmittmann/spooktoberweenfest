@@ -2,7 +2,7 @@ package mwittmann.spooktober.util
 
 import com.badlogic.gdx.math.Rectangle
 import mwittmann.spooktober.entity.{Player, Zombie}
-import mwittmann.spooktober.screen.View
+import mwittmann.spooktober.pipeline.state.ViewState
 import mwittmann.spooktober.unit.{Dimensions2df, Position2df}
 
 import scala.collection.{immutable, mutable}
@@ -57,31 +57,6 @@ class Map2d[A](
 
   case class NodeIndex(x: Int, y: Int)
 
-//  def getNodes[S <: A](view: View)(implicit ev: ClassTag[S]): Set[MapStorable[S]] = {
-//    // Todo: Again, this is not nice and would be nicer if view weren't offset
-//    getNodes(view.gameX - view.gameWidth / 2, view.gameY - view.gameHeight / 2, view.gameWidth, view.gameHeight)
-//      .flatMap(storable => {
-//
-//        if (ev.equals(storable.item)) {
-//        //if (storable.item.isInstanceOf[S]) {
-//          Some(storable.asInstanceOf[MapStorable[S]])
-//        } else {
-//          None
-//        }
-//
-//        /*
-//        storable match {
-//          //case s @ MapStorable(_, _, _: S) : MapStorable[S] => {
-//          case s @ MapStorable(_, _, _: S) => {
-//          //case s: MapStorable[S] if ev.equals(s.item) => {
-//            println("Correct type " + s)
-//            Some(s)
-//          }
-//          case _ => None
-//        }*/
-//      })
-//  }
-
   def checkCollision[S](storable: MapStorable[A])(implicit ev: ClassTag[S]): Set[MapStorable[A]] = {
     getNodes(storable).filter(_.asRectangle.overlaps(storable.asRectangle))
   }
@@ -98,7 +73,6 @@ class Map2d[A](
   }
 
   def move(newLoc: MapStorable[A]): Unit = {
-    //val entity = getEntity(newLoc.item).getOrElse(throw new Exception("Can't move entity, not on map"))
     assert(remove(newLoc.item))
     insert(newLoc)
   }
@@ -200,11 +174,11 @@ class Map2d[A](
       .filter(other => other.item != storable.item && other.asRectangle.overlaps(rect))
   }
 
-  def getNodes(view: View): Set[MapStorable[A]] =
+  def getNodes(view: ViewState): Set[MapStorable[A]] =
     getNodes(view.viewPositionGame, view.viewDimensionsGame)
 
   def getNodes(xStart: Float, yStart: Float, width: Float, height: Float): Set[MapStorable[A]] =
-    getNodes(new Position2df(xStart, yStart), new Dimensions2df(width, height))
+    getNodes(Position2df(xStart, yStart), Dimensions2df(width, height))
 
   def getNodes(position: Position2df, dimensions2df: Dimensions2df): Set[MapStorable[A]] = {
     val (xStart, yStart) = (position.x, position.y)

@@ -1,6 +1,7 @@
 package mwittmann.spooktober.pipeline.stages
 
 import mwittmann.spooktober.pipeline._
+import mwittmann.spooktober.pipeline.state.State
 import mwittmann.spooktober.unit.{Direction, Vector2df}
 import mwittmann.spooktober.unit.Direction._
 
@@ -22,9 +23,6 @@ object PlayerStage extends PipelineStage {
       case Direction.Right  => Vector2df(movementAmount, 0)
       case UpperRight       => Vector2df(movementAmount, movementAmount)
     }
-
-    println("Move amount: " + movementAmount)
-    println("Move vec: " + moveVector)
 
     movePlayer(state, moveVector)
     state

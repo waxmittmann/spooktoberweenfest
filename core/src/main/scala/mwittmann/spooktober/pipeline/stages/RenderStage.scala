@@ -3,8 +3,8 @@ package mwittmann.spooktober.pipeline.stages
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import mwittmann.spooktober.entity.Entity
-import mwittmann.spooktober.pipeline.{PipelineStage, State}
-import mwittmann.spooktober.screen.View
+import mwittmann.spooktober.pipeline.PipelineStage
+import mwittmann.spooktober.pipeline.state.{State, ViewState}
 import mwittmann.spooktober.util.{DebugDraw, MapStorable}
 
 class RenderStage extends PipelineStage {
@@ -30,7 +30,7 @@ class RenderStage extends PipelineStage {
     state
   }
 
-  def render(view: View, renderable: MapStorable[Entity]) = {
+  def render(view: ViewState, renderable: MapStorable[Entity]) = {
     val texture = renderable.item.texture
 
     val x = view.translateX(renderable.position.x)
