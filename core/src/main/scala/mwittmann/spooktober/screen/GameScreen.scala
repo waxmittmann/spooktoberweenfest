@@ -32,7 +32,8 @@ class GameScreen() extends ScreenAdapter {
 
     gameState = pipeline.run(gameState.copy(
       view = calculateView(gameState),
-      input = GameInput.getInput
+      input = GameInput.getInput,
+      delta = delta
     ))
 
     //gameState = GameInput.handle(delta, gameObjects, gameState)

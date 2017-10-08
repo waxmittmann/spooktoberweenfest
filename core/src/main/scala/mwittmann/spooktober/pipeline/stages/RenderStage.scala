@@ -2,10 +2,10 @@ package mwittmann.spooktober.pipeline.stages
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import mwittmann.spooktober.entity.{Entity, Player, Zombie}
+import mwittmann.spooktober.entity.Entity
 import mwittmann.spooktober.pipeline.{PipelineStage, State}
 import mwittmann.spooktober.screen.View
-import mwittmann.spooktober.util.{DebugDraw, Map2d, MapStorable}
+import mwittmann.spooktober.util.{DebugDraw, MapStorable}
 
 class RenderStage extends PipelineStage {
   override val name = "Render"

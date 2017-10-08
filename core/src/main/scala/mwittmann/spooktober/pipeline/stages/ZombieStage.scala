@@ -48,6 +48,4 @@ object ZombieStage extends PipelineStage {
       }
     }
   }
-
-
 }

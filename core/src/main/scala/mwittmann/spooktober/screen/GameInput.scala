@@ -1,37 +1,38 @@
 package mwittmann.spooktober.screen
 
 import com.badlogic.gdx.{Gdx, Input => GdxInput}
-import mwittmann.spooktober.entity.Zombie
-import mwittmann.spooktober.unit.{Dimensions2df, Position2df, Vector2df}
-import mwittmann.spooktober.util.{GlobalRandom, MapStorable}
-import mwittmann.spooktober.pipeline
-import mwittmann.spooktober.pipeline.{Down, Input, LowerLeft, LowerRight, Neutral, Up, UpperLeft, UpperRight}
+import mwittmann.spooktober.pipeline.Input
+import mwittmann.spooktober.unit.Direction._
+import mwittmann.spooktober.unit.Direction
 
 object GameInput {
 
   def getInput: Input = {
     val isW = Gdx.input.isKeyPressed(GdxInput.Keys.W)
-    val isA = Gdx.input.isKeyPressed(GdxInput.Keys.W)
-    val isD = Gdx.input.isKeyPressed(GdxInput.Keys.W)
-    val isS = Gdx.input.isKeyPressed(GdxInput.Keys.W)
+    val isA = Gdx.input.isKeyPressed(GdxInput.Keys.A)
+    val isD = Gdx.input.isKeyPressed(GdxInput.Keys.D)
+    val isS = Gdx.input.isKeyPressed(GdxInput.Keys.S)
 
+    val moveHoriz = if (isA && !isD) Direction.Left else if (!isA && isD) Direction.Right else Neutral
+    val moveVert = if (isW && !isS) Up else if (!isW && isS) Down else Neutral
 
-    val moveHoriz = if (isA && !isD) pipeline.Left else if (!isA && isD) pipeline.Right else pipeline.Neutral
-    val moveVert = if (isW && !isS) pipeline.Up else if (!isW && isS) pipeline.Down else pipeline.Neutral
+    println(moveHoriz + ", " + moveVert)
 
     val movement = (moveHoriz, moveVert) match {
-      case (Left, Down) => LowerLeft
-      case (Left, Neutral) => pipeline.Left
-      case (Left, Up) => UpperLeft
+      case (Direction.Left, Down) => LowerLeft
+      case (Direction.Left, Neutral) => Direction.Left
+      case (Direction.Left, Up) => UpperLeft
 
       case (Neutral, Down) => Down
       case (Neutral, Neutral) => Neutral
       case (Neutral, Up) => Up
 
-      case (Right, Down) => LowerRight
-      case (Right, Neutral) => pipeline.Right
-      case (Right, Up) => UpperRight
+      case (Direction.Right, Down) => LowerRight
+      case (Direction.Right, Neutral) => Direction.Right
+      case (Direction.Right, Up) => UpperRight
     }
+
+    println(movement)
 
     Input(movement, Gdx.input.isKeyPressed(GdxInput.Keys.ENTER))
   }
