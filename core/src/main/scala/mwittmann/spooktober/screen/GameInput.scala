@@ -15,9 +15,12 @@ object GameInput {
       movement      = movement,
       isAddZombies  = Gdx.input.isKeyPressed(GdxInput.Keys.ENTER),
       zoomInput     = zoomInput,
-      mouseInput    = mouseInput(view)
+      mouseInput    = mouseInput(view),
+      firePressed   = fireInput
     )
   }
+
+  private def fireInput: Boolean = Gdx.input.isKeyPressed(GdxInput.Keys.SPACE)
 
   private def mouseInput(view: ViewState): Position2df =
     Position2df(view.untranslateX(Gdx.input.getX()), view.untranslateY(Gdx.graphics.getHeight - Gdx.input.getY()))

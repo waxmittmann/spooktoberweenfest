@@ -37,6 +37,7 @@ object ZombieStage extends PipelineStage {
 
   def addZombies(state: State): State = {
     import state._
+    import state.Implicits._map
 
     if (state.input.isAddZombies) {
       val newZombieState =

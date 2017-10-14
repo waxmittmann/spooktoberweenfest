@@ -12,6 +12,8 @@ case class Position2df(x: Float, y: Float) extends Unit2d[Float] {
 
   def incX(xDelta: Float) = new Position2df(x + xDelta, y)
 
+  def inc(vector2df: Vector2df): Position2df = Position2df(x + vector2df.x, y + vector2df.y)
+
   override def toString: String = "(" + x + ", " + y + ")"
 
   override val xpart: Float = x

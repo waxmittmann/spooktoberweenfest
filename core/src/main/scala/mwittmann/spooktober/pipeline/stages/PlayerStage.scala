@@ -1,17 +1,40 @@
 package mwittmann.spooktober.pipeline.stages
 
 import mwittmann.spooktober.pipeline._
-import mwittmann.spooktober.pipeline.state.State
+import mwittmann.spooktober.pipeline.state.{ProjectilesState, State}
 import mwittmann.spooktober.unit.{Direction, Position2df, Vector2df}
 import mwittmann.spooktober.unit.Direction._
 import mwittmann.spooktober.util.MathUtils
 
 object PlayerStage extends PipelineStage {
 
+  def doAttack(
+    projectileState: ProjectilesState,
+    playerPosition: Position2df,
+    playerDirection: Vector2df
+  ): ProjectilesState =
+    projectileState.add(playerPosition, playerDirection, 30)
+
   override def run(state: State): State = {
     doMovement(state)
     doRotation(state)
-    state
+    if (state.input.firePressed) {
+      val mouseAt = state.input.mouseInput
+      val playerAt = state.player.getCenterPosition(state.map)
+
+      val directionVector = Vector2df(
+        mouseAt.x - playerAt.x,
+        mouseAt.y - playerAt.y
+      ).normalize
+
+      state.copy(projectiles =
+        doAttack(
+          state.projectiles,
+          playerAt,
+          directionVector
+        )
+      )
+    } else state
   }
 
   private def doRotation(state: State): Unit = {
@@ -49,7 +72,8 @@ object PlayerStage extends PipelineStage {
     state: State,
     moveVector: Vector2df
   ): Boolean = {
-    import state.imap
+    import state.Implicits._map
+
     val newPlayerPos = state.player.getPosition.incX(moveVector.x).incY(moveVector.y)
     state.player.move(newPlayerPos)
   }

@@ -7,7 +7,7 @@ import mwittmann.spooktober.unit.{Dimensions2df, Position2df}
 import mwittmann.spooktober.util.Map2d
 
 case class State(
-  zombies: ZombieState = new ZombieState(),
+  zombies: ZombieState = ZombieState(),
   player: PlayerState,
   map: Map2d[Entity],
   view: ViewState = ViewState.emptyView,
@@ -18,7 +18,8 @@ case class State(
   playerSpeed: Float = 10,
   gameDimensions: Dimensions2df,
   terrainState: TerrainState,
-  batch: SpriteBatch = new SpriteBatch()
+  batch: SpriteBatch = new SpriteBatch(),
+  projectiles: ProjectilesState = ProjectilesState(List.empty)
 ) {
   assert(terrainState.mapWidth == gameDimensions.width && terrainState.mapHeight == gameDimensions.height)
 

@@ -65,6 +65,8 @@ object MathUtils {
     v1.xpart * v2.ypart - v1.ypart * v2.xpart
   }
 
+  def length(v: Vector2df) = Math.sqrt(v.x * v.x + v.y * v.y)
+
   def getAngle(center: Unit2d[Float], mouse: Unit2d[Float]): Float = {
     var angle =
       Math.toDegrees(Math.atan2(mouse.ypart - center.ypart, mouse.xpart - center.xpart)).toFloat //- 90 // Because I want 'up' to be 0 degrees

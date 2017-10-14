@@ -25,6 +25,7 @@ class Pipeline(stages: Seq[PipelineStage]) {
 object Pipeline {
   def standardPipeline = new Pipeline(Seq(
     InputActionsStage,
+    ProjectileStage,
     PlayerStage,
     ZombieStage,
     new TerrainRenderStage(),
