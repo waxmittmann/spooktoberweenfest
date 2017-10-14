@@ -1,23 +1,26 @@
 package mwittmann.spooktober.screen
 
 import com.badlogic.gdx.{Gdx, Input => GdxInput}
-
 import mwittmann.spooktober.pipeline.stages.ZoomInput.{MaintainZoom, ZoomIn, ZoomInput, ZoomOut}
-import mwittmann.spooktober.pipeline.state.InputState
+import mwittmann.spooktober.pipeline.state.{InputState, ViewState}
 import mwittmann.spooktober.unit.Direction._
-import mwittmann.spooktober.unit.Direction
+import mwittmann.spooktober.unit.{Direction, Position2df}
 
 object GameInput {
 
-  def getInput: InputState = {
+  def getInput(view: ViewState): InputState = {
     val movement = movementInput
 
     InputState(
       movement      = movement,
       isAddZombies  = Gdx.input.isKeyPressed(GdxInput.Keys.ENTER),
-      zoomInput     = zoomInput
+      zoomInput     = zoomInput,
+      mouseInput    = mouseInput(view)
     )
   }
+
+  private def mouseInput(view: ViewState): Position2df =
+    Position2df(view.untranslateX(Gdx.input.getX()), view.untranslateY(Gdx.graphics.getHeight - Gdx.input.getY()))
 
   private def zoomInput: ZoomInput = {
     if (Gdx.input.isKeyPressed(GdxInput.Keys.MINUS)) ZoomOut

@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 
+// Todo: Rewrite immutable
 object Assets {
   var zombieSheet: Texture = null
   var playerSheet: Texture  = null
@@ -14,7 +15,35 @@ object Assets {
   var zombieA: Animation = null
   var zombieB: Animation = null
 
+  var terrainSheet: Texture = null
+  var terrainTextures: List[TextureRegion] = null
+
+
+  def loadTerrain(): Unit = {
+    terrainSheet = loadTexture("TerrainMap.png")
+
+    if ((terrainSheet.getWidth % 200) != 0)
+      throw new Exception("Terrain tiles must be 200 wide")
+
+    if ((terrainSheet.getHeight % 200) != 0)
+      throw new Exception("Terrain tiles must be 200 high")
+
+
+//    terrainTextures = List(
+//      new TextureRegion(terrainSheet, 0, 0, 400, 400)
+//    )
+
+    terrainTextures = (for {
+        x <- 0 until terrainSheet.getWidth / 200
+        y <- 0 until terrainSheet.getHeight / 200
+      } yield {
+        new TextureRegion(terrainSheet, x * 200, y * 200, 200, 200)
+      }).toList
+  }
+
   def load(): Unit = {
+    loadTerrain()
+
     zombieSheet = loadTexture("ZombiesSpritesheet.png")
 
     playerSheet = loadTexture("PlayerSpritesheet.png")

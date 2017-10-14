@@ -1,6 +1,6 @@
 package mwittmann.spooktober.pipeline
 
-import mwittmann.spooktober.pipeline.stages.{PlayerStage, RenderStage, UIStage, ZombieStage}
+import mwittmann.spooktober.pipeline.stages._
 import mwittmann.spooktober.pipeline.state.State
 
 trait PipelineStage {
@@ -27,6 +27,7 @@ object Pipeline {
     UIStage,
     PlayerStage,
     ZombieStage,
-    new RenderStage()
+    new TerrainRenderStage(),
+    new EntityRenderStage()
   ))
 }

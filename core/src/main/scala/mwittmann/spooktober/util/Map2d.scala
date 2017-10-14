@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Rectangle
 import mwittmann.spooktober.entity.{Player, Zombie}
 import mwittmann.spooktober.pipeline.state.ViewState
 import mwittmann.spooktober.unit.{Dimensions2df, Position2df}
+import mwittmann.spooktober.util.MathUtils.Angle
 
 import scala.collection.{immutable, mutable}
 import scala.reflect.ClassTag
@@ -11,6 +12,7 @@ import scala.reflect.ClassTag
 case class MapStorable[+S](
   position: Position2df,
   dimensions: Dimensions2df,
+  rotation: Float = 0.0f,
   item: S
 )(implicit ev: ClassTag[S]) {
   lazy val asRectangle = new Rectangle(
@@ -23,6 +25,13 @@ class Map2d[A](
   mapDimensions: Dimensions2df,
   nodeDimensions: Dimensions2df
 )(implicit ct: ClassTag[A]) {
+
+  def setRotation(item: A, newAngle: Float): Unit = {
+    val cur: MapStorable[A] = getEntityUnsafe(item)
+    assert(remove(item))
+    insert(cur.copy(rotation = newAngle))
+  }
+
   def insertIfPossible(value: MapStorable[A]): Boolean = {
     if (inBounds(value) && checkCollision(value).isEmpty) {
       insert(value)
@@ -77,12 +86,15 @@ class Map2d[A](
     insert(newLoc)
   }
 
-  def move(entity: A, newLoc: Position2df): Unit = {
+  def move(entity: A, newLoc: Position2df, angle: Option[Angle] = None): Unit = {
     val itms = itemToMapStorable.size
     val itn = itemToNodes.size
 
-    itemToMapStorable.get(entity).map { mapStorable => {
-      val newStorable = mapStorable.copy(newLoc)
+    itemToMapStorable.get(entity).map { (mapStorable: MapStorable[A]) => {
+      val newStorable = {
+        val ms = mapStorable.copy(position = newLoc)
+        angle.map(a => ms.copy(rotation = a)).getOrElse(ms)
+      }
       assert(remove(entity))
       insert(newStorable)
     }}.getOrElse(throw new Exception(s"Can't move $entity because it's not on the map!"))
@@ -100,7 +112,7 @@ class Map2d[A](
   }
 
   def insert(item: A, position2df: Position2df, dimensions2df: Dimensions2df): Unit =
-    insert(MapStorable(position2df, dimensions2df, item))
+    insert(MapStorable(position2df, dimensions2df, 0, item))
 
   def insert(storable: MapStorable[A]): Unit = {
     if (itemToNodes.contains(storable.item)) {

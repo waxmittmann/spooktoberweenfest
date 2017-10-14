@@ -1,7 +1,5 @@
 package mwittmann.spooktober.screen
 
-package me.mwittmann.hellogdx.screen
-
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ScreenAdapter
 import com.badlogic.gdx.graphics.GL20
@@ -21,9 +19,10 @@ class GameScreen() extends ScreenAdapter {
     Gdx.gl.glClearColor(0, 0, 0, 1)
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
+    val view = calculateView(gameState)
     gameState = pipeline.run(gameState.copy(
-      view = calculateView(gameState),
-      input = GameInput.getInput,
+      view = view,
+      input = GameInput.getInput(view),
       delta = delta
     ))
   }

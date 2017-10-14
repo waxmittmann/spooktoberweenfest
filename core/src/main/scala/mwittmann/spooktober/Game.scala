@@ -2,7 +2,7 @@ package mwittmann.spooktober
 
 import com.badlogic.gdx.{Game => GdxGame}
 import com.badlogic.gdx.Gdx
-import mwittmann.spooktober.screen.me.mwittmann.hellogdx.screen.GameScreen
+import mwittmann.spooktober.screen.GameScreen
 import mwittmann.spooktober.util.DebugLog
 
 

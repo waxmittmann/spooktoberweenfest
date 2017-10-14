@@ -7,7 +7,7 @@ class Player extends Entity {
   // Todo: Inc state time
   private[entity] val stateTime = 0
 
-  def getDimensions = new Dimensions2df(10f, 10f)
+  def getDimensions = Dimensions2df(10f, 10f)
 
   override def texture = Assets.player
 }

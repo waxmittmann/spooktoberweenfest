@@ -3,18 +3,18 @@ package mwittmann.spooktober.pipeline.state
 import mwittmann.spooktober.unit.{Dimensions2df, Position2df}
 
 object ViewState {
-  val emptyView = new ViewState(0, 0, 0, 0, 0, 0, 0, 0)
+  val emptyView = ViewState(0, 0, 0, 0, 0, 0, 0, 0)
 }
 
-class ViewState(
-  val gameX: Float,
-  val gameY: Float,
-  val gameWidth: Float,
-  val gameHeight: Float,
-  val screenX: Float,
-  val screenY: Float,
-  val screenWidth: Float,
-  val screenHeight: Float
+case class ViewState(
+  gameX: Float,
+  gameY: Float,
+  gameWidth: Float,
+  gameHeight: Float,
+  screenX: Float,
+  screenY: Float,
+  screenWidth: Float,
+  screenHeight: Float
 ) {
   def viewPositionGame: Position2df = Position2df(gameX, gameY)
   def viewDimensionsGame: Dimensions2df = Dimensions2df(gameWidth, gameHeight)
@@ -22,9 +22,13 @@ class ViewState(
   val xFactor: Float  = screenWidth / gameWidth
   val yFactor: Float = screenHeight / gameHeight
 
-  def translateX(x: Float): Float = (x - gameX) * xFactor + screenX
+  def translateX(gamePosX: Float): Float = (gamePosX - gameX) * xFactor + screenX
 
-  def translateY(y: Float): Float = (y - gameY) * yFactor + screenY
+  def translateY(gamePosY: Float): Float = (gamePosY - gameY) * yFactor + screenY
+
+  def untranslateX(screenPosX: Int): Float = (screenPosX.toFloat - screenX) / xFactor + gameX
+
+  def untranslateY(screenPosY: Int): Float = (screenPosY.toFloat - screenY) / yFactor + gameY
 
   def translateWidth(x: Float): Float = x * xFactor
 

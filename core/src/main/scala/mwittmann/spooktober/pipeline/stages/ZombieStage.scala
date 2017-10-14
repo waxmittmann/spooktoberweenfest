@@ -23,13 +23,11 @@ object ZombieStage extends PipelineStage {
     for (storable <- inView) {
       storable.item match {
         case zombie: Zombie => {
-          val move = zombie.getMove(delta)
+          val (move, angle) = zombie.getMove(delta)
           val newZombiePos = storable.position.add(move)
-
-          val newMapZombie = storable.copy(position = newZombiePos)
-
+          val newMapZombie = storable.copy(position = newZombiePos, rotation = angle)
           if (map.inBounds(newZombiePos, zombie.dimensions) && map.checkCollision(newMapZombie).isEmpty)
-            map.move(zombie, newZombiePos)
+            map.move(zombie, newZombiePos, Some(angle))
         }
 
         case _ => ()

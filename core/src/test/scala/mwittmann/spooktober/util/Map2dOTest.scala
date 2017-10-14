@@ -35,6 +35,7 @@ object Map2dOTest extends Specification with ScalaCheck {
     grid.inBounds(new MapStorable[Unit](
       Position2df(0, 0),
       Dimensions2df(10, 10),
+      0,
       ()
     )) must beTrue
   }
@@ -43,6 +44,7 @@ object Map2dOTest extends Specification with ScalaCheck {
     grid.inBounds(new MapStorable[Unit](
       Position2df(90, 90),
       Dimensions2df(9.999f, 9.999f),
+      0,
       ()
     )) must beTrue
   }
@@ -51,6 +53,7 @@ object Map2dOTest extends Specification with ScalaCheck {
     grid.inBounds(new MapStorable[Unit](
       Position2df(-0.0001f, 10),
       Dimensions2df(9.999f, 9.999f),
+      0,
       ()
     )) must beFalse
   }
@@ -59,6 +62,7 @@ object Map2dOTest extends Specification with ScalaCheck {
     grid.insert(new MapStorable[Unit](
       Position2df(0, 0),
       Dimensions2df(99.9f, 99.9f),
+      0,
       ()
     ))
     ok
@@ -68,6 +72,7 @@ object Map2dOTest extends Specification with ScalaCheck {
     grid.inBounds(new MapStorable[Unit](
       Position2df(99, 99),
       Dimensions2df(0.999f, 0.999f),
+      0,
       ()
     ))
     ok
@@ -86,7 +91,6 @@ object Map2dOTest extends Specification with ScalaCheck {
 
     prop { (v: (Float, Float)) =>
 
-      println("V: " + v)
       val grid = new Map2d[Unit](
         Dimensions2df(100, 100),
         Dimensions2df(10, 10)
@@ -95,6 +99,7 @@ object Map2dOTest extends Specification with ScalaCheck {
       grid.insert(new MapStorable[Unit](
         Position2df(v._1, v._2),
         Dimensions2df(10f, 10f),
+        0,
         ()
       ))
 
