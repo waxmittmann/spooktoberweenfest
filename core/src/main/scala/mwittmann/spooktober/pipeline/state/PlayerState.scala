@@ -15,7 +15,8 @@ object PlayerState {
   }
 }
 
-case class PlayerState(player: Player) {
+case class PlayerState(player: Player, lastFiredAgo: Float = 0.0f) {
+
   def setRotation(newAngle: Float)(implicit map: Map2d[Entity]): Unit = {
     map.setRotation(player, newAngle)
   }

@@ -8,17 +8,19 @@ import mwittmann.spooktober.util.MathUtils
 
 object PlayerStage extends PipelineStage {
 
+  val timeBetweenShots = 0.45f
+
   def doAttack(
     projectileState: ProjectilesState,
     playerPosition: Position2df,
     playerDirection: Vector2df
   ): ProjectilesState =
-    projectileState.add(playerPosition, playerDirection, 30)
+    projectileState.add(playerPosition, playerDirection, 90)
 
   override def run(state: State): State = {
     doMovement(state)
     doRotation(state)
-    if (state.input.firePressed) {
+    if (state.input.firePressed && state.player.lastFiredAgo >= timeBetweenShots) {
       val mouseAt = state.input.mouseInput
       val playerAt = state.player.getCenterPosition(state.map)
 
@@ -27,14 +29,19 @@ object PlayerStage extends PipelineStage {
         mouseAt.y - playerAt.y
       ).normalize
 
-      state.copy(projectiles =
-        doAttack(
-          state.projectiles,
-          playerAt,
-          directionVector
-        )
+      state.copy(
+        projectiles =
+          doAttack(
+            state.projectiles,
+            playerAt,
+            directionVector
+          ),
+
+        player = state.player.copy(lastFiredAgo = 0)
       )
-    } else state
+    } else {
+      state.copy(player = state.player.copy(lastFiredAgo = state.player.lastFiredAgo + state.delta))
+    }
   }
 
   private def doRotation(state: State): Unit = {
