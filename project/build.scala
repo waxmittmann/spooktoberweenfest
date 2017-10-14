@@ -2,7 +2,7 @@ import sbt._
 import Keys._
 
 object Settings {
-  import LibgdxBuild.libgdxVersion
+  val libgdxVersion2 = "1.9.6"
 
   lazy val nativeExtractions = SettingKey[Seq[(String, NameFilter, File)]](
     "native-extractions", "(jar name partial, sbt.NameFilter of files to extract, destination directory)"
@@ -12,10 +12,9 @@ object Settings {
 
   lazy val core = plugins.JvmPlugin.projectSettings ++ Seq(
     version := (version in LocalProject("all-platforms")).value,
-    libgdxVersion := (libgdxVersion in LocalProject("all-platforms")).value,
     scalaVersion := (scalaVersion in LocalProject("all-platforms")).value,
     libraryDependencies ++= Seq(
-      "com.badlogicgames.gdx" % "gdx" % libgdxVersion.value,
+      "com.badlogicgames.gdx" % "gdx" % libgdxVersion2,
       "org.specs2" %% "specs2-core" % "3.9.5" % "test",
       "org.specs2" %% "specs2-scalacheck" % "3.9.5" % "test",
       "org.typelevel" %% "cats-core" % "1.0.0-MF"
@@ -46,8 +45,8 @@ object Settings {
   lazy val desktop = core ++ Seq(
     libraryDependencies ++= Seq(
       "net.sf.proguard" % "proguard-base" % "4.11" % "provided",
-      "com.badlogicgames.gdx" % "gdx-backend-lwjgl" % libgdxVersion.value,
-      "com.badlogicgames.gdx" % "gdx-platform" % libgdxVersion.value classifier "natives-desktop",
+      "com.badlogicgames.gdx" % "gdx-backend-lwjgl" % libgdxVersion2,
+      "com.badlogicgames.gdx" % "gdx-platform" % libgdxVersion2 classifier "natives-desktop",
       "org.specs2" %% "specs2-core" % "3.9.5" % "test",
       "org.typelevel" %% "cats-core" % "1.0.0-MF"
     ),
@@ -120,8 +119,6 @@ object Tasks {
 }
 
 object LibgdxBuild extends Build {
-  lazy val libgdxVersion = settingKey[String]("version of Libgdx library")
-
   lazy val core = Project(
     id       = "core",
     base     = file("core"),

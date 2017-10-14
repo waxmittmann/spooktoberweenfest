@@ -4,7 +4,7 @@ import mwittmann.spooktober.pipeline.stages._
 import mwittmann.spooktober.pipeline.state.State
 
 trait PipelineStage {
-  val name: String
+  val name: String = this.getClass.toString
 
   def run(state: State): State
 
@@ -24,10 +24,11 @@ class Pipeline(stages: Seq[PipelineStage]) {
 
 object Pipeline {
   def standardPipeline = new Pipeline(Seq(
-    UIStage,
+    InputActionsStage,
     PlayerStage,
     ZombieStage,
     new TerrainRenderStage(),
-    new EntityRenderStage()
+    new EntityRenderStage(),
+    new UIRenderStage()
   ))
 }

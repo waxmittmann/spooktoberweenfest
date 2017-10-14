@@ -7,7 +7,6 @@ import mwittmann.spooktober.unit.Direction._
 import mwittmann.spooktober.util.MathUtils
 
 object PlayerStage extends PipelineStage {
-  override val name = "Player"
 
   override def run(state: State): State = {
     doMovement(state)

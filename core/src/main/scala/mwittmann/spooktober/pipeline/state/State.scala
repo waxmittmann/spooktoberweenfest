@@ -1,5 +1,6 @@
 package mwittmann.spooktober.pipeline.state
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import mwittmann.spooktober.asset.me.mwittmann.hellogdx.asset.Assets
 import mwittmann.spooktober.entity.Entity
 import mwittmann.spooktober.unit.{Dimensions2df, Position2df}
@@ -16,11 +17,17 @@ case class State(
   factor: Float = 5.0f,
   playerSpeed: Float = 10,
   gameDimensions: Dimensions2df,
-  terrainState: TerrainState
+  terrainState: TerrainState,
+  batch: SpriteBatch = new SpriteBatch()
 ) {
   assert(terrainState.mapWidth == gameDimensions.width && terrainState.mapHeight == gameDimensions.height)
 
-  implicit val imap = map
+  object Implicits {
+    implicit val _batch = batch
+    implicit val _map = map
+  }
+
+  def cleanup = batch.dispose()
 }
 
 object State {
@@ -37,15 +44,8 @@ object State {
   }
 
   def initTerrainState(gameDimensions: Dimensions2df): TerrainState = {
-//    val textures = Map(
-//      0 -> Assets.zombieA.keyFrames.head,
-//      1 -> Assets.zombieB.keyFrames.head,
-//    )
-
     val textures = Assets.terrainTextures.zipWithIndex.map(_.swap).toMap
-
     val tileDims = 10
-
     val tiles = Array.ofDim[Int]((gameDimensions.width / tileDims).toInt, (gameDimensions.height / tileDims).toInt)
 
     for {

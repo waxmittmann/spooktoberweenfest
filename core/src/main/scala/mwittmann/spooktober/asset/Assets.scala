@@ -5,11 +5,13 @@ package me.mwittmann.hellogdx.asset
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.scenes.scene2d.ui.Skin
 
 // Todo: Rewrite immutable
 object Assets {
   var zombieSheet: Texture = null
   var playerSheet: Texture  = null
+  var skin: Skin = null
 
   var player: TextureRegion = null
   var zombieA: Animation = null
@@ -18,6 +20,7 @@ object Assets {
   var terrainSheet: Texture = null
   var terrainTextures: List[TextureRegion] = null
 
+  def loadUISkin(): Skin = new Skin(Gdx.files.internal("skin2/comic-ui.json"))
 
   def loadTerrain(): Unit = {
     terrainSheet = loadTexture("TerrainMap.png")
@@ -47,6 +50,8 @@ object Assets {
     zombieSheet = loadTexture("ZombiesSpritesheet.png")
 
     playerSheet = loadTexture("PlayerSpritesheet.png")
+
+    skin = loadUISkin()
 
     zombieA = new Animation(
       0.2f,

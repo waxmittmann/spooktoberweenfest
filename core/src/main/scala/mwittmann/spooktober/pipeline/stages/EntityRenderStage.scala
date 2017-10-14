@@ -10,15 +10,13 @@ import mwittmann.spooktober.unit.Position2df
 import mwittmann.spooktober.util.{DebugDraw, Map2d, MapStorable}
 
 class EntityRenderStage extends PipelineStage {
-  override val name = "Render"
-
-  private val batch = new SpriteBatch
 
   override def run(state: State): State = {
     import state._
+    import state.Implicits._batch
 
     DebugDraw.point(view.screenWidth / 2, view.screenHeight / 2, 10)
-    renderCursor(state.view, state.input.mouseInput)
+    renderCursor(state.view, state.input.mouseInput)(state.batch)
 
     batch.begin()
     batch.setProjectionMatrix(batch.getProjectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth, Gdx.graphics.getHeight))
@@ -31,17 +29,17 @@ class EntityRenderStage extends PipelineStage {
   private def renderCursor(
     view: ViewState,
     mouseInput: Position2df
-  ): Unit =
+  )(implicit batch: SpriteBatch): Unit =
     DebugDraw.point(view.translateX(mouseInput.x), view.translateY(mouseInput.y), 5)
 
-  private def renderMap(map: Map2d[Entity], view: ViewState): Unit = {
+  private def renderMap(map: Map2d[Entity], view: ViewState)(implicit batch: SpriteBatch): Unit = {
     val objectsToRender = map.getNodes(view)
     for (renderable <- objectsToRender) {
       render(view, renderable)
     }
   }
 
-  private def render(view: ViewState, renderable: MapStorable[Entity]): Unit = {
+  private def render(view: ViewState, renderable: MapStorable[Entity])(implicit batch: SpriteBatch): Unit = {
     val texture = renderable.item.texture
 
     val x = view.translateX(renderable.position.x)
@@ -51,9 +49,5 @@ class EntityRenderStage extends PipelineStage {
     val height = view.translateHeight(renderable.dimensions.height)
 
     batch.draw(texture, x, y, width/2.0f, height/2.0f, width, height, 1, 1, renderable.rotation)
-  }
-
-  override def cleanup(): Unit = {
-    batch.dispose()
   }
 }

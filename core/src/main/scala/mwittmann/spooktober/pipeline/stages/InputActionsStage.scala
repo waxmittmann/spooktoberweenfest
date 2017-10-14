@@ -11,8 +11,7 @@ object ZoomInput {
   case object MaintainZoom extends ZoomInput
 }
 
-object UIStage extends PipelineStage {
-  override val name = "UI"
+object InputActionsStage extends PipelineStage {
 
   override def run(state: State) = {
     val newGameFactor =

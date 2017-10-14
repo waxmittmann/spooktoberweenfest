@@ -7,7 +7,6 @@ import mwittmann.spooktober.unit.Position2df
 import mwittmann.spooktober.util.GlobalRandom
 
 object ZombieStage extends PipelineStage {
-  override val name = "Zombie"
 
   override def run(state: State): State = {
     addZombies(state)
