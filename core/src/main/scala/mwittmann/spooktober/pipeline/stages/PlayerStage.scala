@@ -2,7 +2,7 @@ package mwittmann.spooktober.pipeline.stages
 
 import mwittmann.spooktober.pipeline._
 import mwittmann.spooktober.pipeline.state.State
-import mwittmann.spooktober.unit.{Direction, Vector2df}
+import mwittmann.spooktober.unit.{Direction, Position2df, Vector2df}
 import mwittmann.spooktober.unit.Direction._
 import mwittmann.spooktober.util.MathUtils
 
@@ -16,9 +16,15 @@ object PlayerStage extends PipelineStage {
   }
 
   private def doRotation(state: State): Unit = {
-    //val newAngle = MathUtils.getAngle(Vector2df(0, 1), state.input.mouseInput)
-    val newAngle = MathUtils.getAngle2(Vector2df(0, 1), state.input.mouseInput)
-    //println("Setting angle to: " + newAngle)
+    val mouseAt = state.input.mouseInput
+    val playerAt = state.player.getCenterPosition(state.map)
+
+    val angleTo = Position2df(
+      mouseAt.x - playerAt.x,
+      mouseAt.y - playerAt.y
+    )
+
+    val newAngle = MathUtils.getAngle2(Vector2df(0, 1), angleTo)
     state.player.setRotation(newAngle)(state.map)
   }
 
