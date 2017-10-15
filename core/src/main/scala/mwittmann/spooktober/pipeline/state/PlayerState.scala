@@ -1,6 +1,6 @@
 package mwittmann.spooktober.pipeline.state
 
-import mwittmann.spooktober.entity.{Entity, Player}
+import mwittmann.spooktober.entity.{Entity, Player, PlayerStorable}
 import mwittmann.spooktober.unit.{Dimensions2df, Position2df, Vector2df}
 import mwittmann.spooktober.util.{Map2d, MapStorable}
 
@@ -10,7 +10,7 @@ object PlayerState {
     initialPositon: Position2df
   ): PlayerState = {
     val player = new Player()
-    map.insert(player, initialPositon, player.getDimensions)
+    map.insert(PlayerStorable(initialPositon, player.getDimensions, 0, player))
     new PlayerState(player)
   }
 }

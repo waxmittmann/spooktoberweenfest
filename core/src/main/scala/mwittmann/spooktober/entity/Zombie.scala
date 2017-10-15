@@ -2,9 +2,22 @@ package mwittmann.spooktober.entity
 
 import mwittmann.spooktober.asset.Animation
 import mwittmann.spooktober.asset.me.mwittmann.hellogdx.asset.Assets
-import mwittmann.spooktober.unit.{Dimensions2df, Vector2df}
+import mwittmann.spooktober.unit.{Dimensions2df, Position2df, Vector2df}
 import mwittmann.spooktober.util.MathUtils.Angle
-import mwittmann.spooktober.util.{GlobalRandom, MathUtils}
+import mwittmann.spooktober.util.{GlobalRandom, MapStorable, MathUtils}
+
+case class ZombieStorable(
+  position: Position2df,
+  dimensions: Dimensions2df,
+  rotation: Float = 0.0f,
+  item: Zombie
+) extends MapStorable[Zombie] {
+  override def copy(
+    position: Position2df = position,
+    dimensions: Dimensions2df = dimensions,
+    rotation: Angle = rotation
+  ) = ZombieStorable(position, dimensions, rotation, item)
+}
 
 class Zombie extends Entity {
   val `type`: Int = GlobalRandom.random.nextInt(2)

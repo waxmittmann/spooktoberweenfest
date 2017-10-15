@@ -1,8 +1,8 @@
 package mwittmann.spooktober.pipeline.stages
 
-import mwittmann.spooktober.entity.Zombie
+import mwittmann.spooktober.entity.{Zombie, ZombieStorable}
 import mwittmann.spooktober.pipeline.PipelineStage
-import mwittmann.spooktober.pipeline.state.{State, ZombieState}
+import mwittmann.spooktober.pipeline.state.{Projectile, State, ZombieState}
 import mwittmann.spooktober.unit.Position2df
 import mwittmann.spooktober.util.GlobalRandom
 
@@ -10,8 +10,22 @@ object ZombieStage extends PipelineStage {
 
   override def run(state: State): State = {
     addZombies(state)
+    val newState = hitZombies(state)
     renderZombies(state)
-    state
+    newState
+  }
+
+  def hitZombies(state: State): State = {
+    val hitZombies = state.projectiles.projectiles.flatMap { (projectile: Projectile) =>
+      state.map
+        .getNodes(projectile.centerPosition, projectile.dimensions)
+        .collect { case zs @ ZombieStorable(_, _, _, _) => zs }
+        .filter(zombie => zombie.asRectangle.contains(projectile.toRectangle))
+        .map(_.item)
+    }.toSet
+
+    // Todo: Add corpse
+    state.copy(zombies = state.zombies.removeMany(hitZombies)(state.map))
   }
 
   def renderZombies(state: State) = {

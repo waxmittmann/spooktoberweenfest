@@ -9,12 +9,18 @@ import mwittmann.spooktober.util.MathUtils.Angle
 import scala.collection.{immutable, mutable}
 import scala.reflect.ClassTag
 
-case class MapStorable[+S](
-  position: Position2df,
-  dimensions: Dimensions2df,
-  rotation: Float = 0.0f,
-  item: S
-)(implicit ev: ClassTag[S]) {
+trait MapStorable[+S] {
+  val position: Position2df
+  val dimensions: Dimensions2df
+  val rotation: Float
+  val item: S
+
+  def copy(
+    position: Position2df = position,
+    dimensions: Dimensions2df = dimensions,
+    rotation: Float = rotation
+  ): MapStorable[S]
+
   lazy val asRectangle = new Rectangle(
     position.x, position.y,
     dimensions.width, dimensions.height
@@ -25,7 +31,6 @@ class Map2d[A](
   mapDimensions: Dimensions2df,
   nodeDimensions: Dimensions2df
 )(implicit ct: ClassTag[A]) {
-
   def setRotation(item: A, newAngle: Float): Unit = {
     val cur: MapStorable[A] = getEntityUnsafe(item)
     assert(remove(item))
@@ -111,9 +116,6 @@ class Map2d[A](
     itemToMapStorable(item).asInstanceOf[MapStorable[S]] // I guess this is safe, but :(
   }
 
-  def insert(item: A, position2df: Position2df, dimensions2df: Dimensions2df): Unit =
-    insert(MapStorable(position2df, dimensions2df, 0, item))
-
   def insert(storable: MapStorable[A]): Unit = {
     if (itemToNodes.contains(storable.item)) {
       throw new Exception(s"Map already contains ${storable.item}")
@@ -175,6 +177,9 @@ class Map2d[A](
       true
     })
   }
+
+  def removeMany(hitZombies: Set[A]): Set[A] =
+    hitZombies.flatMap(z => Some(z).filter(remove))
 
   def getNode(x: Float, y: Float): Set[MapStorable[A]] = {
     nodes((x / nodeDimensions.width).toInt)((y / nodeDimensions.height).toInt)

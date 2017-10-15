@@ -1,7 +1,9 @@
 package mwittmann.spooktober.util
 
+import mwittmann.spooktober.entity.Player
 import mwittmann.spooktober.unit.{Dimensions2df, Position2df}
 import mwittmann.spooktober.util.Map2dOTest.grid
+import mwittmann.spooktober.util.MathUtils.Angle
 import org.scalacheck._
 import org.specs2.{ScalaCheck, Specification}
 
@@ -11,6 +13,19 @@ object Map2dOTest extends Specification with ScalaCheck {
     Dimensions2df(100, 100),
     Dimensions2df(10, 10)
   )
+
+  case class UnitStorable(
+    position: Position2df,
+    dimensions: Dimensions2df,
+    rotation: Float = 0.0f,
+    item: Unit
+  ) extends MapStorable[Unit] {
+    override def copy(
+      position: Position2df = position,
+      dimensions: Dimensions2df = dimensions,
+      rotation: Angle = rotation
+    ) = UnitStorable(position, dimensions, rotation, item)
+  }
 
   override def is =
     s2"""Map2d
@@ -32,7 +47,7 @@ object Map2dOTest extends Specification with ScalaCheck {
       """
 
   def beTrueAtLowerLeft = {
-    grid.inBounds(new MapStorable[Unit](
+    grid.inBounds(new UnitStorable(
       Position2df(0, 0),
       Dimensions2df(10, 10),
       0,
@@ -41,7 +56,7 @@ object Map2dOTest extends Specification with ScalaCheck {
   }
 
   def beTrueAtUpperRight = {
-    grid.inBounds(new MapStorable[Unit](
+    grid.inBounds(new UnitStorable(
       Position2df(90, 90),
       Dimensions2df(9.999f, 9.999f),
       0,
@@ -50,7 +65,7 @@ object Map2dOTest extends Specification with ScalaCheck {
   }
 
   def beFalseWhenTooFarLeft = {
-    grid.inBounds(new MapStorable[Unit](
+    grid.inBounds(new UnitStorable(
       Position2df(-0.0001f, 10),
       Dimensions2df(9.999f, 9.999f),
       0,
@@ -59,7 +74,7 @@ object Map2dOTest extends Specification with ScalaCheck {
   }
 
   def succeedAtLowerLeft = {
-    grid.insert(new MapStorable[Unit](
+    grid.insert(new UnitStorable(
       Position2df(0, 0),
       Dimensions2df(99.9f, 99.9f),
       0,
@@ -69,7 +84,7 @@ object Map2dOTest extends Specification with ScalaCheck {
   }
 
   def succeedAtUpperRight = {
-    grid.inBounds(new MapStorable[Unit](
+    grid.inBounds(new UnitStorable(
       Position2df(99, 99),
       Dimensions2df(0.999f, 0.999f),
       0,
@@ -96,7 +111,7 @@ object Map2dOTest extends Specification with ScalaCheck {
         Dimensions2df(10, 10)
       )
 
-      grid.insert(new MapStorable[Unit](
+      grid.insert(new UnitStorable(
         Position2df(v._1, v._2),
         Dimensions2df(10f, 10f),
         0,
