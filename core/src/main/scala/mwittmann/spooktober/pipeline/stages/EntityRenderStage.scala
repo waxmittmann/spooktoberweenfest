@@ -1,9 +1,9 @@
 package mwittmann.spooktober.pipeline.stages
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.{SpriteBatch, TextureRegion}
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import mwittmann.spooktober.entity.Entity
+import mwittmann.spooktober.entity.{Entity, GameToken}
 import mwittmann.spooktober.pipeline.PipelineStage
 import mwittmann.spooktober.pipeline.state.{ProjectilesState, State, ViewState}
 import mwittmann.spooktober.unit.Position2df
@@ -22,7 +22,8 @@ class EntityRenderStage extends PipelineStage {
     renderProjectiles(state.map, state.view, state.projectiles)
     batch.begin()
     batch.setProjectionMatrix(batch.getProjectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth, Gdx.graphics.getHeight))
-    renderMap(state.map, state.view)
+
+    renderMap(state.map, state.view, state.renderables())
     batch.end()
     state
   }
@@ -35,7 +36,7 @@ class EntityRenderStage extends PipelineStage {
     DebugDraw.point(view.translateX(mouseInput.x), view.translateY(mouseInput.y), 5)
 
   def renderProjectiles(
-    map: Map2d[Entity],
+    map: Map2d[GameToken],
     view: ViewState,
     projectiles: ProjectilesState
   ): Unit = {
@@ -49,15 +50,26 @@ class EntityRenderStage extends PipelineStage {
   }
 
 
-  private def renderMap(map: Map2d[Entity], view: ViewState)(implicit batch: SpriteBatch): Unit = {
-    val objectsToRender = map.getNodes(view)
+  private def renderMap(
+    map: Map2d[GameToken],
+    view: ViewState,
+    entitiesToRender: List[Entity]
+  )(implicit batch: SpriteBatch): Unit = {
+    val objectsToRender: Set[MapStorable[GameToken]] = map.getNodes(view)
+
+    val tokenToTexture = entitiesToRender.map(e => (e.token, e)).toMap
+
     for (renderable <- objectsToRender) {
-      render(view, renderable)
+      render(view, tokenToTexture, renderable)
     }
   }
 
-  private def render(view: ViewState, renderable: MapStorable[Entity])(implicit batch: SpriteBatch): Unit = {
-    val texture = renderable.item.texture
+  private def render(
+    view: ViewState,
+    tokenToEntity: Map[GameToken, Entity],
+    renderable: MapStorable[GameToken]
+  )(implicit batch: SpriteBatch): Unit = {
+    val texture = tokenToEntity(renderable.item).texture
 
     val x = view.translateX(renderable.position.x)
     val y = view.translateY(renderable.position.y)

@@ -8,12 +8,14 @@ import mwittmann.spooktober.unit.{Dimensions2df, Position2df, Vector2df}
 import mwittmann.spooktober.util.MathUtils.Angle
 import mwittmann.spooktober.util.{GlobalRandom, MapStorable, MathUtils}
 
+class ZombieToken extends GameToken
+
 case class ZombieStorable(
   position: Position2df,
   dimensions: Dimensions2df,
   rotation: Float = 0.0f,
-  item: Zombie
-) extends MapStorable[Zombie] {
+  item: ZombieToken
+) extends MapStorable[GameToken] {
   override def copy(
     position: Position2df = position,
     dimensions: Dimensions2df = dimensions,
@@ -40,8 +42,8 @@ object RandomZombieAI extends ZombieAI {
     var newCurrentDirection = attributes.currentDirection
     var newMovedCurrentDirection = attributes.movedCurrentDirection
     if (attributes.movedCurrentDirection >= 1.0) { // 30% chance of direction change
-      if (true) {
-      //if (GlobalRandom.random.nextInt(10) > 7) {
+//      if (true) {
+      if (GlobalRandom.random.nextInt(10) > 7) {
         newCurrentDirection = randomMove
         newMovedCurrentDirection = 0
       } else {
@@ -82,12 +84,13 @@ case class Zombie(
     movedCurrentDirection = 0,
     // Todo: Better
 //    currentDirection = (Vector2df(GlobalRandom.random.nextFloat() * 5, GlobalRandom.random.nextFloat() * 5), 0)
-    currentDirection = (Vector2df(0, 0), 0)
+    currentDirection = (Vector2df(0, 0), 0),
   ),
   stateTime: Float = GlobalRandom.random.nextFloat,
-  zombieAI: ZombieAI = RandomZombieAI
+  zombieAI: ZombieAI = RandomZombieAI,
+  token: ZombieToken = new ZombieToken()
 ) extends Entity {
-  def getKeyframe: TextureRegion = animation.getKeyFrame(stateTime, Animation.ANIMATION_LOOPING)
-
   override def texture = getKeyframe
+
+  def getKeyframe: TextureRegion = animation.getKeyFrame(stateTime, Animation.ANIMATION_LOOPING)
 }

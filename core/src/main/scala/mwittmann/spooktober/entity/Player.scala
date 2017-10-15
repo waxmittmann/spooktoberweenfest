@@ -9,8 +9,8 @@ case class PlayerStorable(
   position: Position2df,
   dimensions: Dimensions2df,
   rotation: Float = 0.0f,
-  item: Player
-) extends MapStorable[Player] {
+  item: GameToken
+) extends MapStorable[GameToken] {
   override def copy(
     position: Position2df = position,
     dimensions: Dimensions2df = dimensions,
@@ -18,7 +18,7 @@ case class PlayerStorable(
   ) = PlayerStorable(position, dimensions, rotation, item)
 }
 
-class Player extends Entity {
+case class Player(token: GameToken = new GameToken {}) extends Entity {
   // Todo: Inc state time
   private[entity] val stateTime = 0
 

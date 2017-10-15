@@ -1,10 +1,10 @@
 package mwittmann.spooktober.pipeline.stages
 
-import mwittmann.spooktober.entity.{Zombie, ZombieStorable}
+import mwittmann.spooktober.entity.{GameToken, Zombie, ZombieStorable, ZombieToken}
 import mwittmann.spooktober.pipeline.PipelineStage
 import mwittmann.spooktober.pipeline.state.{Projectile, State, ZombieState}
 import mwittmann.spooktober.unit.Position2df
-import mwittmann.spooktober.util.GlobalRandom
+import mwittmann.spooktober.util.{GlobalRandom, MapStorable}
 
 object ZombieStage extends PipelineStage {
 
@@ -43,20 +43,20 @@ object ZombieStage extends PipelineStage {
   def renderZombies(state: State): Unit = {
     import state._
 
-    // Todo: Figure out how to get only what I want out
-    val inView = map.getNodes(view)
-    for (storable <- inView) {
-      storable.item match {
-        case zombie: Zombie => {
-          val (move, angle) = zombie.zombieAttributes.currentDirection
-          val newZombiePos = storable.position.add(move)
-          val newMapZombie = storable.copy(position = newZombiePos, rotation = angle)
-          if (map.inBounds(newZombiePos, zombie.zombieAttributes.dimensions) && map.checkCollision(newMapZombie).isEmpty)
-            map.move(zombie, newZombiePos, Some(angle))
-        }
+    // Todo: Don't do this everywhere; have in state
+    val tokenToZombie: Map[GameToken, Zombie] = zombies.zombies.map(z => (z.token, z)).toMap
 
-        case _ => ()
-      }
+    // Todo: Figure out how to get only what I want out
+    // Todo: Now I might not notice if I don't render all zombies?
+    val inView: Set[(MapStorable[GameToken], Zombie)] = map.getNodes(view).flatMap(ms => tokenToZombie.get(ms.item).map(zombie => (ms, zombie)))
+
+    // Todo: Should have entities in view globally available in State somewhere
+    inView.foreach { zombie =>
+      val (move, angle) = zombie._2.zombieAttributes.currentDirection
+      val newZombiePos = zombie._1.position.add(move.mult(state.delta))
+      val newMapZombie = zombie._1.copy(position = newZombiePos, rotation = angle)
+      if (map.inBounds(newZombiePos, zombie._2.zombieAttributes.dimensions) && map.checkCollision(newMapZombie).isEmpty)
+        map.move(zombie._1.item, newZombiePos, Some(angle))
     }
   }
 

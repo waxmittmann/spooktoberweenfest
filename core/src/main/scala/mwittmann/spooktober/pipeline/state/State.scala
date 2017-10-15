@@ -2,14 +2,14 @@ package mwittmann.spooktober.pipeline.state
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import mwittmann.spooktober.asset.me.mwittmann.hellogdx.asset.Assets
-import mwittmann.spooktober.entity.Entity
+import mwittmann.spooktober.entity.{Entity, GameToken}
 import mwittmann.spooktober.unit.{Dimensions2df, Position2df}
 import mwittmann.spooktober.util.Map2d
 
 case class State(
   zombies: ZombieState = ZombieState(),
   player: PlayerState,
-  map: Map2d[Entity],
+  map: Map2d[GameToken],
   view: ViewState = ViewState.emptyView,
   input: InputState = InputState.NoInput,
   delta: Float = 0.0f,
@@ -21,6 +21,8 @@ case class State(
   batch: SpriteBatch = new SpriteBatch(),
   projectiles: ProjectilesState = ProjectilesState(List.empty)
 ) {
+  def renderables(): List[Entity] = player.player :: zombies.zombies
+
   assert(terrainState.mapWidth == gameDimensions.width && terrainState.mapHeight == gameDimensions.height)
 
   object Implicits {
@@ -33,7 +35,7 @@ case class State(
 
 object State {
   def apply(gameDimensions: Dimensions2df): State = {
-    val map = new Map2d[Entity](gameDimensions, Dimensions2df(20, 20))
+    val map = new Map2d[GameToken](gameDimensions, Dimensions2df(20, 20))
     val playerState = PlayerState(map, Position2df(50, 50))
 
     State(
