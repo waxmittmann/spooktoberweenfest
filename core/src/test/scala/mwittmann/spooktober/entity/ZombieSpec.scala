@@ -6,13 +6,13 @@ import org.specs2.mutable.Specification
 class ZombieSpec extends Specification {
 
 
-  "Zombie" >> {
-    "getPosition should return () for ()" >> {
-      val zombie = new Zombie
-      //zombie.get
-
-      ok
-    }
-  }
+//  "Zombie" >> {
+//    "getPosition should return () for ()" >> {
+//      val zombie = new Zombie
+//      //zombie.get
+//
+//      ok
+//    }
+//  }
 
 }

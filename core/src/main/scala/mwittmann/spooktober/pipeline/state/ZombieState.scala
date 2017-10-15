@@ -1,5 +1,6 @@
 package mwittmann.spooktober.pipeline.state
 
+import mwittmann.spooktober.asset.me.mwittmann.hellogdx.asset.Assets
 import mwittmann.spooktober.entity.{Entity, Zombie, ZombieStorable}
 import mwittmann.spooktober.unit.Position2df
 import mwittmann.spooktober.util.{GlobalRandom, Map2d, MapStorable}
@@ -7,9 +8,15 @@ import mwittmann.spooktober.util.{GlobalRandom, Map2d, MapStorable}
 case class ZombieState(zombies: List[Zombie] = List.empty) {
 
   def add(position2df: Position2df)(implicit map: Map2d[Entity]): ZombieState = {
-    val zombie = new Zombie()
-    map.insertIfPossible(ZombieStorable(position2df, zombie.getDimensions, GlobalRandom.random.nextFloat() * 360, zombie))
-    this.copy(zombies = zombies :+ zombie)
+    val zombie = Zombie(
+      animation = if (GlobalRandom.random.nextInt(2) == 0) Assets.zombieA else Assets.zombieB
+    )
+
+    val insertSuccess =
+      map.insertIfPossible(ZombieStorable(position2df, zombie.zombieAttributes.dimensions, GlobalRandom.random.nextFloat() * 360, zombie))
+
+    if (insertSuccess) this.copy(zombies = zombies :+ zombie)
+    else this
   }
 
   def removeMany(hitZombies: Set[Zombie])(implicit map: Map2d[Entity]): ZombieState = {

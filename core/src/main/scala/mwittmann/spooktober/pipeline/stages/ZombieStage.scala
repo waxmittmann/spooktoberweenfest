@@ -9,10 +9,22 @@ import mwittmann.spooktober.util.GlobalRandom
 object ZombieStage extends PipelineStage {
 
   override def run(state: State): State = {
-    addZombies(state)
-    val newState = hitZombies(state)
-    renderZombies(state)
-    newState
+    val s1 = addZombies(state)
+    val s2 = hitZombies(s1)
+    val s3 = s2.copy(zombies = runZombieAI(s2.delta, s2.zombies))
+    renderZombies(s2)
+    s3
+  }
+
+  def runZombieAI(delta: Float, state: ZombieState): ZombieState = {
+    state.copy(zombies =
+      state.zombies.map((zombie: Zombie) => {
+        zombie.copy(
+          stateTime = zombie.stateTime + delta, // Bit dodgy to do this here
+          zombieAttributes = zombie.zombieAI.update(delta, zombie.zombieAttributes)
+        )
+      })
+    )
   }
 
   def hitZombies(state: State): State = {
@@ -28,7 +40,7 @@ object ZombieStage extends PipelineStage {
     state.copy(zombies = state.zombies.removeMany(hitZombies)(state.map))
   }
 
-  def renderZombies(state: State) = {
+  def renderZombies(state: State): Unit = {
     import state._
 
     // Todo: Figure out how to get only what I want out
@@ -36,10 +48,10 @@ object ZombieStage extends PipelineStage {
     for (storable <- inView) {
       storable.item match {
         case zombie: Zombie => {
-          val (move, angle) = zombie.getMove(delta)
+          val (move, angle) = zombie.zombieAttributes.currentDirection
           val newZombiePos = storable.position.add(move)
           val newMapZombie = storable.copy(position = newZombiePos, rotation = angle)
-          if (map.inBounds(newZombiePos, zombie.dimensions) && map.checkCollision(newMapZombie).isEmpty)
+          if (map.inBounds(newZombiePos, zombie.zombieAttributes.dimensions) && map.checkCollision(newMapZombie).isEmpty)
             map.move(zombie, newZombiePos, Some(angle))
         }
 
